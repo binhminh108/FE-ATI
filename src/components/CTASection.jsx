@@ -1,40 +1,55 @@
 // src/components/CTASection.jsx
 import React from "react";
+import { Link } from "react-router-dom"; // Import Link
 
 const CTASection = () => {
   return (
-    <section className="hero-gradient py-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-          Sẵn sàng chinh phục IELTS?
+    // Nền 'cta-gradient' (xanh nhạt) của bạn
+    <section className="cta-gradient py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        
+        {/* Tiêu đề tiếng Anh */}
+        <h2 className="text-3xl md:text-5xl font-bold text-blue-950 mb-6 leading-snug">
+          Ready to conquer IELTS?
         </h2>
-        <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-          Tham gia cùng hàng nghìn học viên đã thành công đạt mục tiêu IELTS với Prep IELTS.
-          Bắt đầu hành trình của bạn ngay hôm nay!
+        {/* Mô tả tiếng Anh */}
+        <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+          Join thousands of students who have successfully achieved their IELTS goals with Prep IELTS.
+          Start your journey today!
         </p>
+
+        {/* Nút bấm tiếng Anh */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="bg-yellow-400 hover:bg-yellow-500 text-blue-900 px-8 py-4 rounded-full text-lg font-semibold btn-hover">
-            Đăng ký học ngay
-          </button>
-          <button className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-full text-lg font-semibold btn-hover">
-            Tư vấn miễn phí
-          </button>
+          <Link
+            to="/signup"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-lg font-semibold btn-hover"
+          >
+            Sign up now
+          </Link>
+          <Link
+            to="/contact"
+            className="bg-white border-2 border-gray-300 text-gray-800 hover:bg-gray-100 hover:border-gray-400 px-8 py-4 rounded-full text-lg font-semibold btn-hover"
+          >
+            Free Consultation
+          </Link>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        {/* Stats tiếng Anh */}
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div>
-            <div className="text-3xl font-bold text-yellow-400 mb-2">10,000+</div>
-            <div className="text-blue-100">Học viên thành công</div>
+            <div className="text-4xl font-bold text-blue-600 mb-2">10,000+</div>
+            <div className="text-gray-600 font-medium">Successful Students</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-yellow-400 mb-2">95%</div>
-            <div className="text-blue-100">Tỷ lệ đạt mục tiêu</div>
+            <div className="text-4xl font-bold text-blue-600 mb-2">95%</div>
+            <div className="text-gray-600 font-medium">Goal Achievement Rate</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-yellow-400 mb-2">8.2</div>
-            <div className="text-blue-100">Điểm trung bình</div>
+            <div className="text-4xl font-bold text-blue-600 mb-2">8.2</div>
+            <div className="text-gray-600 font-medium">Average Score</div>
           </div>
         </div>
+
       </div>
     </section>
   );

@@ -2,6 +2,37 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Mic, Square } from "lucide-react";
 
+// --- Component phụ cho Tin nhắn ---
+// (Copy 100% từ Chatbot.jsx để đồng nhất)
+const ChatMessage = ({ role, content }) => {
+  const isUser = role === "user";
+
+  // Render markdown cơ bản (chữ đậm, xuống dòng)
+  const renderContent = (text) => {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // **Bold**
+      .replace(/\n/g, "<br />"); // Newlines
+  };
+
+  return (
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+      <div
+        className={`max-w-[85%] px-4 py-3 rounded-2xl ${
+          isUser
+            ? "bg-blue-600 text-white rounded-br-lg" // Tin nhắn người dùng
+            : "bg-gray-100 text-gray-800 rounded-bl-lg" // Tin nhắn bot
+        }`}
+      >
+        <div
+          className="text-sm whitespace-pre-line"
+          dangerouslySetInnerHTML={{ __html: renderContent(content) }}
+        ></div>
+      </div>
+    </div>
+  );
+};
+// --- Hết Component phụ ---
+
 function SpeakingTool() {
   const [messages, setMessages] = useState([
     {
@@ -51,12 +82,10 @@ function SpeakingTool() {
   };
 
   return (
-    // === THAY ĐỔI DÒNG NÀY ===
-    // Đã xóa class "max-w-4xl mx-auto"
+    // Container chính với chiều cao 75vh
     <div className="flex flex-col h-[75vh] bg-white border border-gray-200 rounded-xl shadow-sm">
-      
-      {/* 1. KHUNG CHAT LỊCH SỬ */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-5">
+      {/* 1. KHUNG CHAT LỊCH SỬ (Dùng component mới) */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-gray-50/50 rounded-t-xl">
         {messages.map((msg, index) => (
           <ChatMessage key={index} role={msg.role} content={msg.content} />
         ))}
@@ -64,13 +93,16 @@ function SpeakingTool() {
       </div>
 
       {/* 2. KHUNG INPUT & MIC (ở dưới cùng) */}
-      <div className="p-4 border-t border-gray-200 bg-gray-50/50 rounded-b-xl">
+      <div className="p-4 border-t border-gray-200 bg-white rounded-b-xl">
         <div className="flex items-center justify-between gap-4">
-          
           {/* Thông báo trạng thái (bên trái) */}
           <div className="flex-1 text-sm text-gray-500 px-4">
             {isRecording ? (
-              <span className="text-red-500 font-medium">
+              <span className="text-red-500 font-medium flex items-center">
+                <span className="relative flex h-3 w-3 mr-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                </span>
                 Đang ghi âm... (nhấn nút đỏ để dừng)
               </span>
             ) : (
@@ -83,7 +115,7 @@ function SpeakingTool() {
             onClick={toggleRecording}
             className={`relative w-14 h-14 flex items-center justify-center rounded-full text-white shadow-lg transition-all duration-200 ${
               isRecording
-                ? "bg-red-600" // Màu đỏ khi đang record
+                ? "bg-red-600 hover:bg-red-700" // Màu đỏ khi đang record
                 : "bg-blue-600 hover:bg-blue-700" // Màu xanh khi chờ
             }`}
             aria-label={isRecording ? "Dừng ghi âm" : "Bắt đầu ghi âm"}
@@ -107,23 +139,5 @@ function SpeakingTool() {
     </div>
   );
 }
-
-// --- Component phụ để render Tin nhắn ---
-const ChatMessage = ({ role, content }) => {
-  const isUser = role === "user";
-  return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div
-        className={`max-w-[80%] px-5 py-3 rounded-2xl whitespace-pre-line ${
-          isUser
-            ? "bg-blue-600 text-white rounded-br-lg"
-            : "bg-gray-100 text-gray-800 rounded-bl-lg"
-        }`}
-        // Dùng `dangerouslySetInnerHTML` để có thể render chữ in đậm (<strong>)
-        dangerouslySetInnerHTML={{ __html: content }}
-      ></div>
-    </div>
-  );
-};
 
 export default SpeakingTool;

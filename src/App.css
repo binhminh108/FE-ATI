@@ -1,44 +1,65 @@
 /* src/App.css */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Thêm các style từ file test.html vào đây */
-.hero-gradient {
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+@layer base {
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Áp dụng transition mặc định cho các nút và liên kết để mượt mà hơn */
+  button,
+  a {
+    @apply transition-all duration-300 ease-in-out;
+  }
 }
+
+/* TINH CHỈNH CÁC HIỆU ỨNG CỦA BẠN
+*/
+
+.hero-gradient {
+  background: linear-gradient(to bottom, #5e7fea 0%, #a5d2f6 100%);
+}
+/* Hiệu ứng card tinh tế hơn */
 .card-hover {
-  transition: all 0.3s ease;
+  @apply transition-all duration-300 ease-in-out;
+  @apply shadow-lg border border-transparent; /* Thêm border transparent */
 }
 .card-hover:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  @apply transform -translate-y-1.5;
+  @apply shadow-xl; /* Shadow đậm hơn khi hover */
+  /* Bạn có thể thêm border màu nhẹ ở đây nếu muốn, ví dụ: border-gray-100 */
 }
+
+/* Hiệu ứng nút mượt hơn */
 .btn-hover {
-  transition: all 0.3s ease;
+  @apply transition-all duration-300 ease-in-out;
+  @apply shadow-md; /* Shadow nhẹ mặc định */
 }
 .btn-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  @apply transform -translate-y-0.5;
+  @apply shadow-lg; /* Shadow đậm hơn khi hover */
 }
-/* ... (thêm các style khác nếu cần) ... */
 
 
-/* Định nghĩa keyframes cho marquee (bạn đã có) */
+/* MARQUEE & SLIDEUP (Giữ nguyên)
+*/
 @keyframes marquee {
   0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); } /* Sửa thành -50% để lặp mượt */
+  100% { transform: translateX(-50%); }
 }
 
 .animate-marquee {
   animation: marquee 20s linear infinite;
-  /* Thêm thuộc tính để tránh ngắt quãng */
   display: flex;
   width: max-content;
 }
 
-/* Thêm hiệu ứng slide-up cho chatbot */
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -52,4 +73,45 @@
 
 .slide-up {
   animation: slideUp 0.3s ease-out;
+}
+
+/* === THAY ĐỔI HIỆU ỨNG GỢN SÓNG === */
+.card-wave-pattern::after {
+  content: "";
+  position: absolute;
+  /* Đặt ở góc dưới bên phải */
+  bottom: -40%;
+  right: -40%;
+  width: 150%;
+  padding-bottom: 150%;
+  z-index: 0;
+  
+  /* Đổi từ màu đen (rgba(0,0,0...)) sang màu TRẮNG (rgba(255,255,255...)) 
+     để tạo hiệu ứng "sáng" thay vì "tối"
+  */
+  background-image: radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.08) 30%, /* Vòng 1: Trắng mờ 8% */
+      transparent 31%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.08) 51%, /* Vòng 2 */
+      transparent 52%,
+      transparent 70%,
+      rgba(255, 255, 255, 0.08) 71%, /* Vòng 3 */
+      transparent 72%
+    );
+  
+  filter: blur(2px); /* Giảm blur một chút */
+  opacity: 0.9; /* Tăng opacity của lớp sóng */
+  transition: all 0.4s ease-in-out;
+}
+
+.card-wave-pattern:hover::after {
+  transform: scale(1.05);
+  opacity: 1;
+} 
+
+.cta-gradient {
+  background-color: #f0f9ff; /* blue-50 */
+  background-image: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); /* light blue to slightly darker light blue */
 }
