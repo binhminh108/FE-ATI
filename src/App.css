@@ -1,5 +1,5 @@
 /* src/App.css */
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @tailwind base;
 @tailwind components;
@@ -7,7 +7,7 @@
 
 @layer base {
   body {
-    font-family: 'Be Vietnam Pro', sans-serif;
+    font-family: "Be Vietnam Pro", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -23,7 +23,7 @@
 */
 
 .hero-gradient {
-  background: linear-gradient(to bottom, #5e7fea 0%, #a5d2f6 100%);
+  background: linear-gradient(to bottom, #c5d2ff 0%, #a5d2f6 100%);
 }
 /* Hiệu ứng card tinh tế hơn */
 .card-hover {
@@ -46,12 +46,15 @@
   @apply shadow-lg; /* Shadow đậm hơn khi hover */
 }
 
-
 /* MARQUEE & SLIDEUP (Giữ nguyên)
 */
 @keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .animate-marquee {
@@ -85,22 +88,22 @@
   width: 150%;
   padding-bottom: 150%;
   z-index: 0;
-  
+
   /* Đổi từ màu đen (rgba(0,0,0...)) sang màu TRẮNG (rgba(255,255,255...)) 
      để tạo hiệu ứng "sáng" thay vì "tối"
   */
   background-image: radial-gradient(
-      circle at center,
-      rgba(255, 255, 255, 0.08) 30%, /* Vòng 1: Trắng mờ 8% */
-      transparent 31%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.08) 51%, /* Vòng 2 */
-      transparent 52%,
-      transparent 70%,
-      rgba(255, 255, 255, 0.08) 71%, /* Vòng 3 */
-      transparent 72%
-    );
-  
+    circle at center,
+    rgba(255, 255, 255, 0.08) 30%,
+    /* Vòng 1: Trắng mờ 8% */ transparent 31%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.08) 51%,
+    /* Vòng 2 */ transparent 52%,
+    transparent 70%,
+    rgba(255, 255, 255, 0.08) 71%,
+    /* Vòng 3 */ transparent 72%
+  );
+
   filter: blur(2px); /* Giảm blur một chút */
   opacity: 0.9; /* Tăng opacity của lớp sóng */
   transition: all 0.4s ease-in-out;
@@ -109,9 +112,13 @@
 .card-wave-pattern:hover::after {
   transform: scale(1.05);
   opacity: 1;
-} 
+}
 
 .cta-gradient {
   background-color: #f0f9ff; /* blue-50 */
-  background-image: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); /* light blue to slightly darker light blue */
+  background-image: linear-gradient(
+    135deg,
+    #f0f9ff 0%,
+    #e0f2fe 100%
+  ); /* light blue to slightly darker light blue */
 }
