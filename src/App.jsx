@@ -18,9 +18,11 @@ import IeltsListWriting from "./components/List/IeltsListWriting.jsx";
 import IeltsListListening from "./components/List/IeltsListListening.jsx";
 import IeltsListReading from "./components/List/IeltsListReading.jsx";
 import IeltsListSpeaking from "./components/List/IeltsListSpeaking.jsx";
+import ScrollToTop from "./components/ScrollToTop";
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex-grow">
