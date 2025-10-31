@@ -12,7 +12,12 @@ import AIAssessmentPage from "./pages/AIAssessmentPage";
 import LoginPage from "./pages/LoginPage"; // <-- THÊM DÒNG NÀY
 import SignupPage from "./pages/SignupPage"; // <-- THÊM DÒNG NÀY
 import "./App.css";
-
+import WrittingUI from "./components/MainExam/WritingUI.jsx";
+import IELTSScoringApp from "./components/DonePage/IELTSScoringApp.jsx";
+import IeltsListWriting from "./components/List/IeltsListWriting.jsx";
+import IeltsListListening from "./components/List/IeltsListListening.jsx";
+import IeltsListReading from "./components/List/IeltsListReading.jsx";
+import IeltsListSpeaking from "./components/List/IeltsListSpeaking.jsx";
 function App() {
   return (
     <Router>
@@ -22,15 +27,19 @@ function App() {
           <Routes>
             <Route path="/" element={<Homepage />} />
             {/* Các trang con cho từng kỹ năng */}
-            <Route path="/listening" element={<Listening />} />
-            <Route path="/reading" element={<Reading />} />
-            <Route path="/writing" element={<Writing />} />
-            <Route path="/speaking" element={<Speaking />} />
+            <Route path="/listening" element={<IeltsListListening />} />
+            <Route path="/reading" element={<IeltsListReading />} />
+            <Route path="/writing" element={<IeltsListWriting />} />
+            <Route path="/speaking" element={<IeltsListSpeaking />} />
             {/* Trang AI Assessment */}
-            <Route path="/ai-assessment" element={<AIAssessmentPage />} />
+            <Route path="/ai-assessment" element={<WrittingUI />} />
             {/* Trang Login/Signup */}
-            <Route path="/login" element={<LoginPage />} /> {/* <-- THÊM DÒNG NÀY */}
-            <Route path="/signup" element={<SignupPage />} /> {/* <-- THÊM DÒNG NÀY */}
+            <Route path="/login" element={<LoginPage />} />{" "}
+            {/* <-- THÊM DÒNG NÀY */}
+            <Route path="/signup" element={<SignupPage />} />{" "}
+            {/* <-- THÊM DÒNG NÀY */}
+            <Route path="/WritingDone" element={<IELTSScoringApp />} />
+            <Route path="/ai-assessment-page" element={<AIAssessmentPage />} />
           </Routes>
         </main>
         <Footer />
