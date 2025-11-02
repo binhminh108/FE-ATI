@@ -113,17 +113,17 @@ const FileTextIcon = () => (
 // --- Component Card Đề thi (Đã cập nhật màu xanh) ---
 const TestCard = ({ test }) => {
   return (
-    <div className="bg-white border border-blue-200 rounded-lg shadow-sm p-4 flex flex-col items-center text-center h-full">
-      <div className="bg-teal-500 text-white rounded-md w-8 h-8 flex items-center justify-center font-bold text-lg mb-2">
+    <div className="bg-white border border-green-200 rounded-lg shadow-sm p-4 flex flex-col items-center text-center h-full">
+      <div className="bg-green-500 text-white rounded-md w-8 h-8 flex items-center justify-center font-bold text-lg mb-2">
         P
       </div>
       <h3 className="text-sm font-semibold text-gray-700 min-h-[2.8rem] flex items-center">
         {test.title}
       </h3>
-      <div className="text-2xl font-bold text-blue-600 my-2">
+      <div className="text-2xl font-bold text-green-600 my-2">
         {test.progress}%
       </div>
-      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition duration-200">
+      <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition duration-200">
         <LightningIcon />
         Take Test
       </button>
@@ -140,7 +140,7 @@ const TestSection = ({ title, tests }) => {
   return (
     <section className="bg-white rounded-lg shadow-md p-6 mb-8">
       <h2 className="text-xl font-semibold text-gray-900 mb-4">{title}</h2>
-      <div className="border border-blue-200 rounded-lg p-4">
+      <div className="border border-green-200 rounded-lg p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {tests.map((test) => (
             <TestCard key={test.id} test={test} />
@@ -167,7 +167,7 @@ const Pagination = ({ itemsPerPage, totalItems, paginate, currentPage }) => {
               onClick={() => paginate(number)}
               className={`flex items-center justify-center px-4 h-10 leading-tight ${
                 currentPage === number
-                  ? "text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700"
+                  ? "text-green-600 border border-green-300 bg-green-50 hover:bg-green-100 hover:text-green-700"
                   : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
               } ${pageNumbers.length === 1 ? "rounded-lg" : ""} ${
                 number === 1 ? "rounded-l-lg" : ""

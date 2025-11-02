@@ -1,4 +1,6 @@
 // src/pages/SpeakingTestPage.jsx
+// (Đã sửa lỗi cú pháp)
+
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -11,7 +13,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-// --- Bộ câu hỏi IELTS Speaking (Giả lập) ---
+// --- Bộ câu hỏi IELTS Speaking (Giữ nguyên) ---
 const SPEAKING_QUESTIONS = [
   // Part 1
   { type: "Part 1", text: "What is your full name?" },
@@ -53,8 +55,13 @@ const TOTAL_QUESTIONS = SPEAKING_QUESTIONS.length;
 function SpeakingTestPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [recordingStatus, setRecordingStatus] = useState("idle"); // idle, recording, paused
-  const [totalElapsedTime, setTotalElapsedTime] = useState(0); // Tổng thời gian đã ghi âm
-  const [audioRecordings, setAudioRecordings] = useState([]); // [{ question, audioUrl, blob }]
+  const [totalElapsedTime, setTotalElapsedTime] = useState(0);
+  
+  const [finalRecording, setFinalRecording] = useState({
+    audioUrl: null,
+    blob: null,
+  });
+  
   const [isFinished, setIsFinished] = useState(false);
 
   const mediaRecorderRef = useRef(null);
@@ -67,19 +74,16 @@ function SpeakingTestPage() {
   // --- Logic Hẹn giờ ---
   useEffect(() => {
     if (recordingStatus === "recording") {
-      // Bắt đầu đếm giờ
       timerIntervalRef.current = setInterval(() => {
         setTotalElapsedTime((prev) => prev + 1);
       }, 1000);
     } else {
-      // Dừng đếm giờ
       clearInterval(timerIntervalRef.current);
     }
     return () => clearInterval(timerIntervalRef.current);
   }, [recordingStatus]);
 
   // --- Logic Dọn dẹp ---
-  // Đảm bảo tắt mic khi người dùng rời trang
   useEffect(() => {
     return () => {
       stopMediaStream();
@@ -96,13 +100,11 @@ function SpeakingTestPage() {
 
   const startRecording = async () => {
     if (recordingStatus === "paused" && mediaRecorderRef.current) {
-      // Nếu đang tạm dừng, tiếp tục
       mediaRecorderRef.current.resume();
       setRecordingStatus("recording");
       return;
     }
 
-    // Nếu bắt đầu mới
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -110,7 +112,7 @@ function SpeakingTestPage() {
         mimeType: "audio/webm",
       });
 
-      recordedChunksRef.current = []; // Xóa các chunks cũ
+      recordedChunksRef.current = []; 
 
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -135,37 +137,6 @@ function SpeakingTestPage() {
     }
   };
 
-  const saveRecording = (questionText) => {
-    return new Promise((resolve) => {
-      if (recordingStatus === "idle") {
-        // Người dùng bỏ qua câu hỏi
-        setAudioRecordings((prev) => [
-          ...prev,
-          { question: questionText, audioUrl: null, blob: null },
-        ]);
-        resolve();
-        return;
-      }
-
-      // Đang ghi âm hoặc tạm dừng -> lưu lại
-      mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(recordedChunksRef.current, {
-          type: "audio/webm",
-        });
-        const audioUrl = URL.createObjectURL(blob);
-        setAudioRecordings((prev) => [
-          ...prev,
-          { question: questionText, audioUrl, blob },
-        ]);
-        recordedChunksRef.current = [];
-        resolve();
-      };
-
-      mediaRecorderRef.current.stop();
-      setRecordingStatus("idle");
-    });
-  };
-
   // --- Hàm Điều khiển ---
 
   const handleToggleRecordPause = () => {
@@ -177,33 +148,60 @@ function SpeakingTestPage() {
     }
   };
 
-  const handleNextQuestion = async () => {
-    const questionText = SPEAKING_QUESTIONS[currentQuestionIndex].text;
-    await saveRecording(questionText);
+  const handleNextQuestion = () => {
+    const isLast = currentQuestionIndex === TOTAL_QUESTIONS - 1;
 
-    if (currentQuestionIndex < TOTAL_QUESTIONS - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1);
-    } else {
-      // Đây là câu cuối cùng
+    if (isLast) {
       handleFinishTest();
+    } else {
+      setCurrentQuestionIndex((prev) => prev + 1);
     }
   };
 
   const handleFinishTest = () => {
-    setIsFinished(true);
-    stopMediaStream(); // Tắt mic
+    if (isFinished) return;
+
     clearInterval(timerIntervalRef.current);
+
+    if (recordingStatus === "idle" && recordedChunksRef.current.length === 0) {
+      setFinalRecording({ audioUrl: null, blob: null });
+      setIsFinished(true);
+      stopMediaStream();
+      return;
+    }
+
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(recordedChunksRef.current, {
+          type: "audio/webm",
+        });
+        const audioUrl = URL.createObjectURL(blob);
+        
+        setFinalRecording({ audioUrl, blob });
+        
+        recordedChunksRef.current = [];
+        setIsFinished(true);
+        stopMediaStream();
+        setRecordingStatus("idle");
+      };
+
+      if (recordingStatus !== "idle") {
+        mediaRecorderRef.current.stop();
+      }
+    } else {
+      setIsFinished(true);
+    }
   };
 
+
   const handleClose = () => {
-    // Thêm cảnh báo nếu đang thi
     if (!isFinished && recordingStatus !== "idle") {
       if (!window.confirm("Bạn có chắc muốn thoát? Toàn bộ tiến trình sẽ bị mất.")) {
         return;
       }
     }
     stopMediaStream();
-    navigate("/"); // Quay về trang chủ
+    navigate("/"); 
   };
 
   // --- Hàm Phụ ---
@@ -262,13 +260,12 @@ function SpeakingTestPage() {
             </h1>
           </div>
         ) : (
-          <FinishedScreen recordings={audioRecordings} />
+          <FinishedScreen recording={finalRecording} />
         )}
       </main>
 
       {/* 3. Footer / Controls */}
       <footer className="flex justify-between items-center p-4 border-t border-gray-200">
-        {/* Nút Ghi âm / Tạm dừng */}
         <button
           onClick={handleToggleRecordPause}
           disabled={isFinished}
@@ -285,10 +282,13 @@ function SpeakingTestPage() {
           ) : (
             <Mic size={18} />
           )}
-          {recordingStatus === "recording" ? "Pause" : "Record"}
+          {recordingStatus === "recording"
+            ? "Pause"
+            : recordingStatus === "paused"
+            ? "Resume"
+            : "Record"}
         </button>
 
-        {/* Trạng thái */}
         <div className="text-sm font-medium">
           {recordingStatus === "recording" && (
             <span className="flex items-center gap-2 text-red-600">
@@ -301,7 +301,6 @@ function SpeakingTestPage() {
           )}
         </div>
 
-        {/* Nút Next / Finish */}
         <button
           onClick={handleNextQuestion}
           disabled={isFinished}
@@ -320,7 +319,7 @@ function SpeakingTestPage() {
 }
 
 // --- Component Màn hình Hoàn thành ---
-const FinishedScreen = ({ recordings }) => {
+const FinishedScreen = ({ recording }) => {
   return (
     <div className="text-center max-w-2xl w-full">
       <CheckCircle size={64} className="text-green-500 mx-auto mb-4" />
@@ -329,34 +328,29 @@ const FinishedScreen = ({ recordings }) => {
       </h1>
       <p className="text-lg text-gray-600 mb-8">
         Well done. You have completed the Speaking test. You can review your
-        recordings below.
-      </p>
+        recording below.
+      </p> {/* <--- ĐÂY LÀ DÒNG ĐÃ SỬA (từ </n> thành </p>) */}
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-left space-y-4 max-h-64 overflow-y-auto">
-        {recordings.map((rec, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between p-3 bg-white rounded-md shadow-sm"
-          >
-            <span className="font-medium text-gray-700">
-              Question {index + 1}
+        <div className="flex items-center justify-between p-3 bg-white rounded-md shadow-sm">
+          <span className="font-medium text-gray-700">Full Test Recording</span>
+          {recording.audioUrl ? (
+            <audio src={recording.audioUrl} controls className="h-10" />
+          ) : (
+            <span className="text-gray-400 text-sm italic">
+              No recording found.
             </span>
-            {rec.audioUrl ? (
-              <audio src={rec.audioUrl} controls className="h-10" />
-            ) : (
-              <span className="text-gray-400 text-sm italic">Skipped</span>
-            )}
-            {rec.audioUrl && (
-              <a
-                href={rec.audioUrl}
-                download={`speaking_q${index + 1}.webm`}
-                className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
-                title="Download"
-              >
-                <Download size={18} />
-              </a>
-            )}
-          </div>
-        ))}
+          )}
+          {recording.audioUrl && (
+            <a
+              href={recording.audioUrl}
+              download={`full_speaking_test.webm`}
+              className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
+              title="Download"
+            >
+              <Download size={18} />
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );

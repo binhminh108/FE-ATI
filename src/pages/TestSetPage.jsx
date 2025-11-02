@@ -9,8 +9,7 @@ import {
   PlayCircle,
 } from "lucide-react";
 
-// === SỬA LỖI ĐƯỜNG DẪN ===
-// 2. Sửa lỗi 2 dấu gạch chéo (//)
+
 import testLibraryImage from "../images/banner1.jpeg"; 
 
 // --- Dữ liệu giả lập cho trang (Giữ nguyên) ---
@@ -133,8 +132,8 @@ const TestPartCard = ({ part }) => {
     switch(skill.toLowerCase()) {
       case 'listening': return '/listening';
       case 'reading': return '/reading';
-      case 'writing': return '/writing'; // Đã sửa ở bước trước
-      case 'speaking': return '/speaking'; // Đã sửa ở bước trước
+      case 'writing': return '/ai-assessment';
+      case 'speaking': return '/ai-assessment';
       default: return '#';
     }
   };
@@ -204,8 +203,9 @@ function TestSetPage({ collection = "Cambridge" }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             
             <div className="text-gray-800">
+              {/* === SỬA LỖI: THAY ĐỔI TIÊU ĐỀ ĐỘNG === */}
               <h1 className="text-blue-950 text-[56px] font-semibold leading-[120%] tracking-tighter mb-6">
-                {collection}
+                {collection} {/* Thay vì "Cambridge" */}
                 <span
                   style={{
                     backgroundImage: "linear-gradient(to bottom, #3b82f6, #22d3ee)",
@@ -218,6 +218,7 @@ function TestSetPage({ collection = "Cambridge" }) {
                   IELTS
                 </span> Online Tests
               </h1>
+              {/* === HẾT SỬA LỖI === */}
               <p className="text-gray-700 md:text-2xl mb-8 leading-relaxed">
                 LexiPrep for IELTS – Practice & take mock tests online with a free
                 test bank, including real & {collection} tests. Simulated computer-based
@@ -239,15 +240,8 @@ function TestSetPage({ collection = "Cambridge" }) {
               </div>
             </div>
 
-            {/* === SỬA LỖI: Thêm lại ảnh học sinh === */}
             <div className="relative overflow-hidden rounded-lg h-full min-h-[400px]">
-              {/* Ảnh nền (Z-0) */}
-              <img
-                src={studentsPhones}
-                alt="Students"
-                className="absolute inset-0 w-full h-full object-cover z-0 opacity-50" 
-              />
-              {/* Ảnh nổi (Z-10) */}
+              
               <div className="relative z-10 p-4">
                 <img 
                   src={testLibraryImage} // Biến đã được import
