@@ -33,7 +33,6 @@ const ChatMessage = ({ role, content }) => {
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  // Xóa activeTab vì thiết kế mới không có
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -138,13 +137,9 @@ export default function Chatbot() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-blue-950 hover:bg-blue-800 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center group relative transition-all duration-300 hover:scale-110 btn-hover"
+          className="bg-blue-700 hover:bg-blue-800 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center group relative transition-all duration-300 hover:scale-110 btn-hover"
           aria-label="Mở AI Chatbot"
         >
-          {/* Đây là logo AI từ ảnh của bạn.
-            *** QUAN TRỌNG: Bạn cần thay thế 'logo-ai.png' bằng đường dẫn đến ảnh của bạn ***
-            Ví dụ: "/images/aichat-icon.png" (nếu bạn đặt nó trong public/images)
-          */}
           <img src="/images/icon_chatbot.png" alt="AI Bot" className="w-15 h-15" /> 
         </button>
       )}

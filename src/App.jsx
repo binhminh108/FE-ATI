@@ -6,11 +6,10 @@ import Homepage from "./pages/Homepage";
 import Listening from "./pages/Listening";
 import Reading from "./pages/Reading";
 import Writing from "./pages/Writing";
-import Speaking from "./pages/Speaking";
 import Chatbot from "./components/Chatbot";
 import AIAssessmentPage from "./pages/AIAssessmentPage";
-import LoginPage from "./pages/LoginPage"; // <-- THÊM DÒNG NÀY
-import SignupPage from "./pages/SignupPage"; // <-- THÊM DÒNG NÀY
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 import "./App.css";
 import WrittingUI from "./components/MainExam/WritingUI.jsx";
 import IELTSScoringApp from "./components/DonePage/IELTSScoringApp.jsx";
@@ -18,8 +17,12 @@ import IeltsListWriting from "./components/List/IeltsListWriting.jsx";
 import IeltsListListening from "./components/List/IeltsListListening.jsx";
 import IeltsListReading from "./components/List/IeltsListReading.jsx";
 import IeltsListSpeaking from "./components/List/IeltsListSpeaking.jsx";
-import IeltsGrader from "./components/MainExam/IeltsGrader.jsx";
 import ScrollToTop from "./components/ScrollToTop";
+import TestSetPage from "./pages/TestSetPage.jsx";
+
+// === BƯỚC 1: Import trang thi Speaking mới ===
+import SpeakingTestPage from "./pages/SpeakingTestPage.jsx";
+
 function App() {
   return (
     <Router>
@@ -34,15 +37,26 @@ function App() {
             <Route path="/reading" element={<IeltsListReading />} />
             <Route path="/writing" element={<IeltsListWriting />} />
             <Route path="/speaking" element={<IeltsListSpeaking />} />
-            {/* Trang AI Assessment */}
-            <Route path="/ai-assessment" element={<IeltsGrader />} />
-            {/* Trang Login/Signup */}
-            <Route path="/login" element={<LoginPage />} />{" "}
-            {/* <-- THÊM DÒNG NÀY */}
-            <Route path="/signup" element={<SignupPage />} />{" "}
-            {/* <-- THÊM DÒNG NÀY */}
+            
+            <Route path="/ai-assessment" element={<WrittingUI />} />
+            
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
             <Route path="/WritingDone" element={<IELTSScoringApp />} />
             <Route path="/ai-assessment-page" element={<AIAssessmentPage />} />
+
+            <Route 
+              path="/cambridge-tests" 
+              element={<TestSetPage collection="Cambridge" />} 
+            />
+            <Route 
+              path="/collins-tests" 
+              element={<TestSetPage collection="Collins" />} 
+            />
+
+            {/* === BƯỚC 2: Thêm Route cho trang thi Speaking === */}
+            <Route path="/speaking-test" element={<SpeakingTestPage />} />
+
           </Routes>
         </main>
         <Footer />
@@ -53,3 +67,4 @@ function App() {
 }
 
 export default App;
+

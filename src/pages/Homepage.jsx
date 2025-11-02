@@ -7,7 +7,6 @@ import Partners from "../components/Partners";
 import SkillsCourses from "../components/SkillsCourses";
 import Testimonials from "../components/Testimonials";
 import CTASection from "../components/CTASection";
-import Instructors from "../components/Instructor";
 import AIIELTS from "../components/AIIELTS.JSX";
 
 // Trang chủ mới, tập hợp tất cả các section từ test.html
@@ -19,7 +18,6 @@ function Homepage() {
       <Partners />
       <AIIELTS />
       <SkillsCourses />
-      {/* <Instructors /> */}
       <Testimonials />
       <CTASection />
     </div>

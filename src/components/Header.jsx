@@ -25,7 +25,7 @@ const Header = () => {
               </Link>
               {/* (Các link khác của bạn) */}
               <a href="#" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
-                Khóa học
+                Courses
               </a>
               <Link to="/ai-assessment" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
                 Luyện thi AI
@@ -39,13 +39,13 @@ const Header = () => {
               to="/login"
               className="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-full text-sm font-medium transition-colors"
             >
-              Đăng nhập
+              Login
             </Link>
             <Link
               to="/signup"
               className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-medium btn-hover"
             >
-              Đăng ký
+              Sign Up
             </Link>
           </div>
 
@@ -76,13 +76,13 @@ const Header = () => {
                 to="/login"
                 className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium"
               >
-                Đăng nhập
+                Login
               </Link>
               <Link
                 to="/signup"
                 className="w-full text-left bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-base font-medium mt-1"
               >
-                Đăng ký
+                Sign Up
               </Link>
             </div>
           </div>
