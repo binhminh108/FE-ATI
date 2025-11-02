@@ -1,13 +1,7 @@
 // src/components/SkillsCourses.jsx
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  Headphones,
-  BookOpen,
-  PenSquare,
-  Mic,
-  ArrowRight,
-} from "lucide-react";
+import { Headphones, BookOpen, PenSquare, Mic, ArrowRight } from "lucide-react";
 
 // 1. Cấu trúc dữ liệu mới cho 4 thẻ Practice
 const practiceSkills = [
@@ -21,7 +15,7 @@ const practiceSkills = [
       {
         type: "link",
         text: "General Training",
-        href: "/listening-general",
+        href: "/listening",
         style: "general",
       },
     ],
@@ -39,7 +33,7 @@ const practiceSkills = [
       {
         type: "link",
         text: "General Training",
-        href: "/reading-general",
+        href: "/reading",
         style: "general",
       },
     ],
@@ -62,7 +56,7 @@ const practiceSkills = [
       {
         type: "link",
         text: "General Training",
-        href: "/ai-assessment",
+        href: "/writing",
         style: "general",
       },
     ],
@@ -80,13 +74,13 @@ const practiceSkills = [
       {
         type: "link",
         text: "Academic",
-        href: "/ai-assessment", // Cần đảm bảo trang AI có tab Speaking
+        href: "/speaking", // Cần đảm bảo trang AI có tab Speaking
         style: "academic",
       },
       {
         type: "link",
         text: "General Training",
-        href: "/ai-assessment",
+        href: "/speaking",
         style: "general",
       },
     ],
@@ -156,7 +150,8 @@ const SkillsCourses = () => {
             Practice Individual Skills
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Practice IELTS online by skill, using Cambridge and Actual test sets.
+            Practice IELTS online by skill, using Cambridge and Actual test
+            sets.
           </p>
         </div>
 
