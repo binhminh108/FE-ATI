@@ -15,7 +15,7 @@ const practiceSkills = [
       {
         type: "link",
         text: "General Training",
-        href: "/listening-general",
+        href: "/listening",
         style: "general",
       },
     ],
@@ -33,7 +33,7 @@ const practiceSkills = [
       {
         type: "link",
         text: "General Training",
-        href: "/reading-general",
+        href: "/reading",
         style: "general",
       },
     ],
@@ -50,13 +50,13 @@ const practiceSkills = [
       {
         type: "link",
         text: "Academic",
-        href: "/writing",
+        href: "/ai-assessment",
         style: "academic",
       },
       {
         type: "link",
         text: "General Training",
-        href: "/ai-assessment",
+        href: "/writing",
         style: "general",
       },
     ],
@@ -80,7 +80,7 @@ const practiceSkills = [
       {
         type: "link",
         text: "General Training",
-        href: "/ai-assessment",
+        href: "/speaking",
         style: "general",
       },
     ],
