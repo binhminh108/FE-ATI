@@ -132,7 +132,15 @@ export default function IELTSScoringApp() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <Header />
+
+      {/* <div className="bg-gradient-to-b from-blue-400 to-indigo-400 text-black p-8 md:p-10 rounded-xl shadow-lg mb-8 text-center">
+        <h1 className="text-3xl md:text-4xl font-bold mb-3">
+          Trình Chấm Điểm IELTS Writing AI
+        </h1>
+        <p className="text-lg text-black">
+          Tải lên bài viết của bạn và nhận phân tích chi tiết ngay lập tức.
+        </p>
+      </div> */}
 
       {/* Main Content */}
       <div ref={containerRef} className="flex flex-1 overflow-hidden mt-2">
@@ -262,7 +270,7 @@ export default function IELTSScoringApp() {
           style={{ width: `${100 - leftWidth}%` }}
           className="bg-gray-50 overflow-hidden flex flex-col"
         >
-          <div className="bg-teal-600 text-white px-6 py-4">
+          <div className="bg-gradient-to-b from-blue-400 to-indigo-400 text-black px-6 py-4">
             <h2 className="text-lg font-semibold">Đánh giá AI chi tiết</h2>
           </div>
 
@@ -354,7 +362,7 @@ export default function IELTSScoringApp() {
             {/* Suggestions */}
 
             {/* Criteria Scores */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            {/* <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
                 Chi tiết từng tiêu chí
               </h3>
@@ -386,7 +394,7 @@ export default function IELTSScoringApp() {
                   </p>
                 </div>
               ))}
-            </div>
+            </div> */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                 <svg
@@ -454,64 +462,6 @@ export default function IELTSScoringApp() {
                     </li>
                     <li>• Đảm bảo mỗi đoạn có chủ đề rõ ràng</li>
                   </ul>
-                </div>
-              </div>
-            </div>
-            {/* Next Steps */}
-            <div className="bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-4">Bước tiếp theo</h3>
-              <div className="space-y-3">
-                <div className="flex items-center">
-                  <svg
-                    className="w-5 h-5 mr-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span className="text-sm">
-                    Luyện tập thêm về thì hiện tại hoàn thành
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <svg
-                    className="w-5 h-5 mr-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.832 18.477 19.246 18 17.5 18c-1.746 0-3.332.477-4.5 1.253"
-                    />
-                  </svg>
-                  <span className="text-sm">Đọc thêm bài mẫu band 8.0+</span>
-                </div>
-                <div className="flex items-center">
-                  <svg
-                    className="w-5 h-5 mr-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                    />
-                  </svg>
-                  <span className="text-sm">
-                    Viết thêm 2-3 bài Task 2 trong tuần
-                  </span>
                 </div>
               </div>
             </div>

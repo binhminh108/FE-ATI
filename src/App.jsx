@@ -18,6 +18,7 @@ import IeltsListWriting from "./components/List/IeltsListWriting.jsx";
 import IeltsListListening from "./components/List/IeltsListListening.jsx";
 import IeltsListReading from "./components/List/IeltsListReading.jsx";
 import IeltsListSpeaking from "./components/List/IeltsListSpeaking.jsx";
+import IeltsGrader from "./components/MainExam/IeltsGrader.jsx";
 function App() {
   return (
     <Router>
@@ -32,7 +33,7 @@ function App() {
             <Route path="/writing" element={<IeltsListWriting />} />
             <Route path="/speaking" element={<IeltsListSpeaking />} />
             {/* Trang AI Assessment */}
-            <Route path="/ai-assessment" element={<WrittingUI />} />
+            <Route path="/ai-assessment" element={<IeltsGrader />} />
             {/* Trang Login/Signup */}
             <Route path="/login" element={<LoginPage />} />{" "}
             {/* <-- THÊM DÒNG NÀY */}

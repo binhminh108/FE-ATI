@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { ArrowDownOutlined } from "@ant-design/icons";
 
 // Import ảnh học sinh
-import studentsPhones from "../assets/students-phones.webp";
 
 const Hero = () => {
   const handleScrollDown = () => {
@@ -17,13 +16,14 @@ const Hero = () => {
 
   return (
     <section
-      className="hero-gradient pt-16 flex items-center relative rounded-b-[50px]"
+      className="hero-gradient pt-0 flex items-center relative w-full rounded-b-[50px]"
       style={{ minHeight: "calc(100vh - 64px)" }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      {/* Full width container so hero is not constrained by max-width */}
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-20 h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
           {/* Left Content (Giữ nguyên) */}
-          <div className="text-gray-800">
+          <div className="text-gray-800 h-full flex flex-col justify-center">
             {/* ... (Toàn bộ code h1, p, Link của bạn) ... */}
             <h1 className="text-blue-950 text-[56px] font-semibold   leading-[120%] tracking-tighter mb-6">
               Free Online{" "}
@@ -79,14 +79,6 @@ const Hero = () => {
               - 'scale-125': (Tùy chọn) Vẫn giữ để ảnh to hơn một chút nếu bạn muốn.
               - 'z-0': Đảm bảo ảnh nằm ở lớp dưới cùng.
             */}
-            <img
-              src={studentsPhones}
-              alt="Students"
-              className="absolute inset-0 w-full h-full object-cover z-0"
-              // scale-125 có thể được giữ lại hoặc bỏ đi, tùy vào hiệu ứng bạn muốn
-              // Nếu bạn muốn ảnh to hơn nữa, có thể tăng scale lên scale-130, scale-150...
-              // className="absolute inset-0 w-full h-full object-cover scale-125 z-0"
-            />
 
             {/* ImageCarousel (Lớp phủ) */}
             {/*
