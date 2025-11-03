@@ -11,7 +11,6 @@ import AIAssessmentPage from "./pages/AIAssessmentPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import "./App.css";
-import WrittingUI from "./components/MainExam/WritingUI.jsx";
 import IELTSScoringApp from "./components/DonePage/IELTSScoringApp.jsx";
 import IeltsListWriting from "./components/List/IeltsListWriting.jsx";
 import IeltsListListening from "./components/List/IeltsListListening.jsx";
@@ -27,7 +26,7 @@ function App() {
   return (
     <Router>
       {/* XÓA ScrollToTop, Header, Footer, Chatbot khỏi đây */}
-      
+
       <Routes>
         {/* === BƯỚC 2: Các route CÓ Header/Footer === */}
         <Route element={<MainLayout />}>
@@ -54,7 +53,6 @@ function App() {
         {/* === BƯỚC 3: Route KHÔNG CÓ Header/Footer (Focus Mode) === */}
         <Route path="/speaking-test" element={<SpeakingTestPage />} />
       </Routes>
-      
     </Router>
   );
 }

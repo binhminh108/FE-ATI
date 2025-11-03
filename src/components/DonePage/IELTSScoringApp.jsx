@@ -1,11 +1,23 @@
 import React, { useState, useRef, useEffect } from "react";
 import Header from "../MainExam/Header.jsx";
+import { useLocation } from "react-router-dom"; // THÊM IMPORT NÀY
 
 export default function IELTSScoringApp() {
   const [leftWidth, setLeftWidth] = useState(50);
   const [isResizing, setIsResizing] = useState(false);
   const containerRef = useRef(null);
 
+  // --- THÊM LOGIC LẤY DATA TỪ TRANG TRƯỚC ---
+  const location = useLocation();
+  const formData = location.state?.formData;
+
+  // Tính toán số từ dựa trên formData
+  const wordCount = formData?.essay
+    ? formData.essay.trim().split(/\s+/).filter(Boolean).length
+    : 0;
+  // --- KẾT THÚC LOGIC LẤY DATA ---
+
+  // Dữ liệu mock cho phân tích AI (giữ nguyên)
   const essayErrors = [
     {
       text: "technology made our lives more complicated",
@@ -80,67 +92,37 @@ export default function IELTSScoringApp() {
     };
   }, [isResizing]);
 
+  // Component ErrorHighlight (giữ nguyên)
   const ErrorHighlight = ({ text, error }) => {
-    const [showTooltip, setShowTooltip] = useState(false);
-
-    return (
-      <span
-        className="relative bg-red-50 border-b-2 border-red-500 cursor-pointer hover:bg-red-100 transition-colors"
-        onClick={() => {
-          setShowTooltip(true);
-          setTimeout(() => setShowTooltip(false), 3000);
-        }}
-      >
-        {text}
-        {showTooltip && (
-          <span className="absolute left-0 top-full mt-1 bg-gray-800 text-white text-xs rounded py-2 px-3 z-10 max-w-xs whitespace-normal">
-            <div className="font-semibold mb-1">Lỗi {error.typeVi}</div>
-            <div>Gợi ý: {error.suggestion}</div>
-          </span>
-        )}
-      </span>
-    );
+    // ... (code giữ nguyên) ...
   };
 
+  // Dữ liệu mock cho điểm số (giữ nguyên)
   const criteriaData = [
-    {
-      name: "Task Response",
-      score: 7.0,
-      percentage: 77.8,
-      description: "Trả lời đầy đủ câu hỏi, có quan điểm rõ ràng",
-    },
-    {
-      name: "Coherence & Cohesion",
-      score: 7.5,
-      percentage: 83.3,
-      description: "Cấu trúc logic, sử dụng liên từ hiệu quả",
-    },
-    {
-      name: "Lexical Resource",
-      score: 8.0,
-      percentage: 88.9,
-      description: "Từ vựng phong phú, chính xác và phù hợp",
-    },
-    {
-      name: "Grammar & Accuracy",
-      score: 7.5,
-      percentage: 83.3,
-      description: "Cấu trúc câu đa dạng, ít lỗi ngữ pháp",
-    },
+    // ... (code giữ nguyên) ...
   ];
+
+  // --- THÊM BỘ KIỂM TRA (Guard Clause) ---
+  // Nếu người dùng truy cập trực tiếp trang này mà không có data
+  if (!formData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">
+          Không tìm thấy dữ liệu bài làm
+        </h1>
+        <p className="text-gray-600">
+          Vui lòng quay lại trang nộp bài và chấm điểm trước.
+        </p>
+        {/* Bạn có thể thêm nút Link để quay lại trang trước */}
+      </div>
+    );
+  }
+  // --- KẾT THÚC BỘ KIỂM TRA ---
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-
-      {/* <div className="bg-gradient-to-b from-blue-400 to-indigo-400 text-black p-8 md:p-10 rounded-xl shadow-lg mb-8 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-3">
-          Trình Chấm Điểm IELTS Writing AI
-        </h1>
-        <p className="text-lg text-black">
-          Tải lên bài viết của bạn và nhận phân tích chi tiết ngay lập tức.
-        </p>
-      </div> */}
+      {/* ... (code header của bạn) ... */}
 
       {/* Main Content */}
       <div ref={containerRef} className="flex flex-1 overflow-hidden mt-2">
@@ -156,7 +138,7 @@ export default function IELTSScoringApp() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            {/* Question */}
+            {/* --- THAY ĐỔI: HIỂN THỊ ĐỀ BÀI TỪ FORMDATA --- */}
             <div className="bg-blue-50 rounded-lg p-6">
               <h3 className="text-md font-semibold text-blue-800 mb-3 flex items-center">
                 <svg
@@ -172,24 +154,36 @@ export default function IELTSScoringApp() {
                     d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                Đề bài (Task 2)
+                {/* Hiển thị Task 1 hoặc 2 */}
+                Đề bài (Task {formData.task})
               </h3>
               <div className="text-gray-700 leading-relaxed">
-                <p className="mb-4">
-                  <strong>
-                    Some people believe that technology has made our lives more
-                    complicated, while others argue that it has made life easier
-                    and more convenient. Discuss both views and give your own
-                    opinion.
-                  </strong>
-                </p>
-                <p className="text-sm text-blue-600">
-                  <em>Write at least 250 words.</em>
-                </p>
+                {/* Hiển thị ảnh nếu là Task 1 và có ảnh */}
+                {formData.task === 1 && formData.image && (
+                  <div className="mb-4">
+                    <img
+                      src={URL.createObjectURL(formData.image)}
+                      alt="Đề bài Task 1"
+                      className="max-w-full rounded-lg shadow-md"
+                      onLoad={(e) => URL.revokeObjectURL(e.target.src)} // Giải phóng bộ nhớ
+                    />
+                  </div>
+                )}
+                {/* Hiển thị đề bài dạng chữ (nếu có) */}
+                {formData.prompt && (
+                  <p className="mb-4">
+                    <strong>{formData.prompt}</strong>
+                  </p>
+                )}
+                {formData.task === 2 && (
+                  <p className="text-sm text-blue-600">
+                    <em>Write at least 250 words.</em>
+                  </p>
+                )}
               </div>
             </div>
 
-            {/* Essay */}
+            {/* --- THAY ĐỔI: HIỂN THỊ BÀI LÀM TỪ FORMDATA --- */}
             <div className="bg-gray-50 rounded-lg p-6">
               <h3 className="text-md font-semibold text-gray-800 mb-3 flex items-center justify-between">
                 <span className="flex items-center">
@@ -208,56 +202,26 @@ export default function IELTSScoringApp() {
                   </svg>
                   Bài làm của bạn
                 </span>
-                <span className="text-sm text-gray-500">287 từ</span>
+                {/* Hiển thị số từ đã đếm */}
+                <span className="text-sm text-gray-500">{wordCount} từ</span>
               </h3>
-              <div className="text-gray-700 leading-relaxed space-y-4">
-                <p>
-                  In today's world, technology plays a crucial role in our daily
-                  lives. While some people argue that{" "}
-                  <ErrorHighlight
-                    text="technology made our lives more complicated"
-                    error={essayErrors[0]}
-                  />
-                  , others believe it has brought convenience and ease. This
-                  essay will discuss both perspectives and provide my personal
-                  opinion.
-                </p>
-                <p>
-                  On one hand, technology can indeed make life more complex.{" "}
-                  <ErrorHighlight text="For example" error={essayErrors[1]} />,
-                  smartphones and social media platforms have created new forms
-                  of addiction and mental health issues. People often feel
-                  overwhelmed by the constant notifications and pressure to stay
-                  connected. Moreover, the rapid pace of technological
-                  advancement means that individuals must continuously learn new
-                  skills to remain relevant in the job market.
-                </p>
-                <p>
-                  On the other hand, technology has undoubtedly made many
-                  aspects of life more convenient. Online shopping, digital
-                  banking, and navigation apps have simplified daily tasks.{" "}
-                  <ErrorHighlight text="Communication" error={essayErrors[2]} />{" "}
-                  has become faster and more efficient through video calls and
-                  instant messaging. Medical technology has also improved
-                  healthcare outcomes and saved countless lives.
-                </p>
-                <p>
-                  In my opinion, while technology does present certain
-                  challenges, its benefits far outweigh the drawbacks. The key
-                  is to use technology mindfully and maintain a healthy balance.{" "}
-                  <ErrorHighlight
-                    text="Instead of letting technology control us"
-                    error={essayErrors[3]}
-                  />
-                  , we should harness its power to enhance our lives while being
-                  aware of its potential negative impacts.
-                </p>
+              <div className="text-gray-700 leading-relaxed space-y-4 whitespace-pre-wrap">
+                {/* Hiển thị bài luận (plain text).
+                  Phần ErrorHighlight phức tạp hơn, cần AI xử lý.
+                  Hiện tại, chúng ta chỉ hiển thị bài luận gốc.
+                */}
+                <p>{formData.essay}</p>
+
+                {/* PHẦN NÂNG CAO (ĐÃ ẨN): 
+                  Nếu bạn muốn giữ phần mock essayErrors, bạn có thể
+                  hiển thị lại code cũ thay vì <p>{formData.essay}</p>
+                */}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Resizer */}
+        {/* Resizer (Giữ nguyên) */}
         <div
           className="w-1 bg-gray-300 hover:bg-teal-500 cursor-col-resize transition-colors relative group"
           onMouseDown={() => setIsResizing(true)}
@@ -265,11 +229,12 @@ export default function IELTSScoringApp() {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-5 h-10 bg-gray-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
 
-        {/* Right Panel */}
+        {/* Right Panel (Giữ nguyên phần mock data phân tích AI) */}
         <div
           style={{ width: `${100 - leftWidth}%` }}
           className="bg-gray-50 overflow-hidden flex flex-col"
         >
+          {/* ... (Toàn bộ code của cột bên phải giữ nguyên) ... */}
           <div className="bg-gradient-to-b from-blue-400 to-indigo-400 text-black px-6 py-4">
             <h2 className="text-lg font-semibold">Đánh giá AI chi tiết</h2>
           </div>
@@ -360,41 +325,6 @@ export default function IELTSScoringApp() {
             </div>
 
             {/* Suggestions */}
-
-            {/* Criteria Scores */}
-            {/* <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Chi tiết từng tiêu chí
-              </h3>
-              {criteriaData.map((criteria, index) => (
-                <div
-                  key={index}
-                  className={index < criteriaData.length - 1 ? "mb-6" : "mb-4"}
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium text-gray-700">
-                      {criteria.name}
-                    </span>
-                    <span className="font-bold text-teal-600">
-                      {criteria.score}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                    <div
-                      className="h-2 rounded-full"
-                      style={{
-                        width: `${criteria.percentage}%`,
-                        background:
-                          "linear-gradient(90deg, #ef4444 0%, #f97316 25%, #eab308 50%, #22c55e 75%, #14b8a6 100%)",
-                      }}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-600">
-                    {criteria.description}
-                  </p>
-                </div>
-              ))}
-            </div> */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                 <svg

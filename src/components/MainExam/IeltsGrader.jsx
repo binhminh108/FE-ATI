@@ -1,44 +1,250 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import ChartUpload from "./ChartUpload";
-// === THAY ĐỔI 1: Xóa import icon ===
-// import { SnippetsOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
-// ... (các state khác giữ nguyên) ...
+// --- THÊM IMPORT CHO CHART UPLOAD ---
+import { InboxOutlined } from "@ant-design/icons";
+// Sửa: Bỏ import { Image } từ 'antd' vì không dùng nữa
+import { message, Upload, Button } from "antd";
+
+const { Dragger } = Upload;
+
+// ====================================================================
+// === COMPONENT ChartUpload (ĐÃ ĐƯỢC GỘP VÀO ĐÂY) ===
+// ====================================================================
+
+// --- Component Preview Item (Cập nhật) ---
+const PreviewItem = ({ file, onRemove }) => {
+  return (
+    // THÊM 'group' ĐỂ KÍCH HOẠT HIỆU ỨNG HOVER
+    // === SỬA LỖI: Thêm onClick stopPropagation và cursor-default ===
+    <div
+      key={file.uid}
+      onClick={(e) => e.stopPropagation()} // Ngăn click lan lên Dragger
+      // THAY ĐỔI: Tăng chiều cao từ h-80 lên h-96 (384px)
+      className="relative group w-full h-96 rounded-lg overflow-hidden shadow-md bg-gray-100 cursor-default" // Đặt cursor bình thường
+    >
+      <img
+        src={file.url}
+        alt={file.name}
+        className="w-full h-full object-contain" // Giữ object-contain
+      />
+
+      {/* THAY ĐỔI: Thêm 'hidden', 'group-hover:block', và 'cursor-pointer' */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation(); // Ngăn click lan lên div cha
+          onRemove(file);
+        }}
+        aria-label="Remove"
+        className="absolute top-2 right-2 z-10 bg-black/60 text-white rounded-full p-1 hover:bg-black/80 transition-all hidden group-hover:block cursor-pointer" // Thêm cursor-pointer
+      >
+        {/* Icon X (Close) bằng SVG */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5" // Tăng kích thước icon lên 1 chút
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+  );
+};
+
+const ChartUpload = ({
+  uploadUrl,
+  handleFileSelect,
+  handleFileDrop,
+  maxSizeMB = 20,
+}) => {
+  const [fileList, setFileList] = useState([]);
+  const [uploading, setUploading] = useState(false);
+
+  // Validate and add preview
+  const beforeUpload = (file) => {
+    if (!file.type.match("image.*")) {
+      message.error("Chỉ cho phép file hình (jpg/png/webp).");
+      return Upload.LIST_IGNORE;
+    }
+    if (file.size / 1024 / 1024 >= maxSizeMB) {
+      message.error(`Ảnh phải nhỏ hơn ${maxSizeMB} MB.`);
+      return Upload.LIST_IGNORE;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const previewFile = {
+        uid: `${Date.now()}_${Math.random()}`,
+        name: file.name,
+        status: "done",
+        url: e.target.result,
+        originFileObj: file,
+      };
+      setFileList((prev) => [...prev, previewFile]);
+
+      // --- Báo cho cha biết có file ---
+      if (typeof handleFileSelect === "function") {
+        handleFileSelect({ target: { files: [file] } });
+      }
+    };
+    reader.readAsDataURL(file);
+
+    return Upload.LIST_IGNORE;
+  };
+
+  // Keep controlled list in sync if antd triggers change (removes etc.)
+  const handleChange = ({ fileList: newList }) => {
+    const normalized = newList
+      .filter((f) => f && (f.uid || f.url || f.originFileObj))
+      .map((f) =>
+        f.url
+          ? f
+          : {
+              uid: f.uid || `${Date.now()}_${Math.random()}`,
+              name: f.name,
+              status: f.status || "done",
+              url: f.url || f.thumbUrl || undefined,
+              originFileObj: f.originFileObj,
+            }
+      );
+    setFileList(normalized);
+
+    // --- Báo cho cha biết nếu fileList rỗng ---
+    if (newList.length === 0 && typeof handleFileSelect === "function") {
+      handleFileSelect({ target: { files: [] } }); // Gửi mảng rỗng
+    }
+  };
+
+  const handleRemove = (file) => {
+    const newList = fileList.filter((f) => f.uid !== file.uid);
+    setFileList(newList);
+
+    // --- Báo cho cha biết nếu fileList rỗng sau khi xóa ---
+    if (newList.length === 0 && typeof handleFileSelect === "function") {
+      handleFileSelect({ target: { files: [] } }); // Gửi mảng rỗng
+    }
+  };
+
+  // ... (Hàm startUpload giữ nguyên) ...
+  const startUpload = async () => {
+    /* (code giữ nguyên) */
+  };
+
+  return (
+    <>
+      <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+        Tải Lên Ảnh Đề Bài
+      </h2>
+      <p className="text-sm text-gray-600 mb-3">
+        Nếu đề bài của bạn là hình ảnh (biểu đồ, bản đồ...), hãy tải nó lên đây.
+      </p>
+
+      <Dragger
+        accept=".jpg,.jpeg,.png,.webp"
+        multiple={true}
+        fileList={fileList}
+        beforeUpload={beforeUpload}
+        onChange={handleChange}
+        onRemove={handleRemove}
+        showUploadList={false}
+        onDrop={(e) => {
+          if (typeof handleFileDrop === "function") handleFileDrop(e);
+        }}
+        className="transition-all"
+        style={
+          fileList.length > 0 ? { padding: 0, border: "none" } : { padding: 12 }
+        }
+      >
+        {fileList.length === 0 ? (
+          <>
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">
+              Nhấn hoặc kéo thả file vào khu vực này để tải lên
+            </p>
+            <p className="ant-upload-hint">
+              Ảnh biểu đồ sẽ được hiển thị rõ nét tại đây.
+            </p>
+          </>
+        ) : (
+          <div className="p-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+            {/* THAY ĐỔI: Bỏ grid, dùng flex-col để ảnh xếp dọc và to */}
+            <div className="preview-gallery flex flex-col gap-4">
+              {fileList.map((f) => (
+                <PreviewItem key={f.uid} file={f} onRemove={handleRemove} />
+              ))}
+            </div>
+            <p className="text-center text-gray-500 mt-4 text-sm font-medium">
+              Bạn vẫn có thể kéo thả hoặc click vào đây để tải thêm ảnh.
+            </p>
+          </div>
+        )}
+      </Dragger>
+
+      <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+        <Button
+          onClick={() => {
+            setFileList([]);
+            message.info("Đã xoá tất cả file.");
+            // --- Báo cho cha biết khi clear all ---
+            if (typeof handleFileSelect === "function") {
+              handleFileSelect({ target: { files: [] } });
+            }
+          }}
+          disabled={fileList.length === 0}
+        >
+          Xóa tất cả
+        </Button>
+      </div>
+    </>
+  );
+};
+// ====================================================================
+// === KẾT THÚC COMPONENT ChartUpload ===
+// ====================================================================
+
 // === COMPONENT CỘT NHẬP LIỆU (BÊN TRÁI) ===
 const InputColumn = ({ onGrade, isLoading }) => {
   const [selectedTask, setSelectedTask] = useState(1);
-  const [promptText, setPromptText] = useState(""); // <-- THÊM LẠI DÒNG NÀY
-  // ... (các state khác giữ nguyên) ...
+  const [promptText, setPromptText] = useState("");
   const [essayText, setEssayText] = useState("");
-  const [uploadedFile, setUploadedFile] = useState(null);
+  const [uploadedFile, setUploadedFile] = useState(null); // State để giữ file
   const [errors, setErrors] = useState({ prompt: null, essay: null });
 
-  // ... (các hàm handleTaskChange, handleFileChange, handleSubmit giữ nguyên) ...
   const handleTaskChange = (task) => {
     setSelectedTask(task);
-    // Xóa lỗi prompt khi đổi task
     setErrors((prev) => ({ ...prev, prompt: null }));
   };
 
-  // Xử lý khi tải file
+  // Xử lý khi tải file (nhận từ ChartUpload)
   const handleFileChange = (event) => {
-    const file = event.target.files[0];
+    // Kiểm tra xem event có file hay không (có thể là mảng rỗng khi clear)
+    const file = event.target.files && event.target.files[0];
     if (file) {
       setUploadedFile(file);
       // Xóa lỗi prompt nếu người dùng upload file
       setErrors((prev) => ({ ...prev, prompt: null }));
     } else {
+      // Nếu không có file (ví dụ: người dùng xóa hết)
       setUploadedFile(null);
     }
   };
 
   // Xử lý khi nhấn nút chấm điểm
   const handleSubmit = () => {
-    // 1. Validate input
     let hasError = false;
     let newErrors = { prompt: null, essay: null };
 
+    // Validate: Cần kiểm tra state 'uploadedFile'
     if (selectedTask === 1 && promptText.trim() === "" && !uploadedFile) {
       newErrors.prompt = "Vui lòng nhập đề bài hoặc tải ảnh lên.";
       hasError = true;
@@ -58,12 +264,11 @@ const InputColumn = ({ onGrade, isLoading }) => {
       return;
     }
 
-    // 2. Gửi dữ liệu lên component cha (IeltsGrader) để xử lý
     onGrade({
       task: selectedTask,
       prompt: promptText,
       essay: essayText,
-      image: uploadedFile,
+      image: uploadedFile, // Gửi file đi
     });
   };
 
@@ -72,20 +277,16 @@ const InputColumn = ({ onGrade, isLoading }) => {
     return text.trim().split(/\s+/).filter(Boolean).length;
   };
 
-  // === THAY ĐỔI 2: Xóa hàm handlePaste ===
-  // const handlePaste = async (setter) => { ... };
-
   // Hàm Clear
   const handleClear = (setter) => {
     setter("");
   };
 
-  // Tính toán số chữ (sẽ được gọi trong JSX)
   const essayWordCount = countWords(essayText);
 
   return (
     <div className="flex flex-col gap-6 mt-12">
-      {/* KHỐI 1: CHỌN LOẠI BÀI VIẾT (Giữ nguyên) */}
+      {/* KHỐI 1: CHỌN LOẠI BÀI VIẾT */}
       <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
         <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
           Chọn Loại Bài Viết
@@ -128,12 +329,21 @@ const InputColumn = ({ onGrade, isLoading }) => {
         </div>
       </div>
 
-      <ChartUpload />
+      {/* KHỐI 1.5: UPLOAD ẢNH (Conditional) */}
+      {/* Chỉ hiển thị khi chọn Task 1 */}
+      {selectedTask === 1 && (
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 transition-all duration-300">
+          <ChartUpload
+            handleFileSelect={handleFileChange} // Truyền hàm xử lý file xuống
+            // handleFileDrop={...} // (Bạn có thể thêm nếu cần)
+          />
+        </div>
+      )}
+
       {/* KHỐI 2: NHẬP ĐỀ BÀI */}
       <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Nhập Đề Bài</h2>
-          {/* === THAY ĐỔI 3: Xóa nút Paste, thay icon Clear bằng text === */}
           <div className="flex space-x-2">
             <button
               onClick={() => handleClear(setPromptText)}
@@ -145,7 +355,7 @@ const InputColumn = ({ onGrade, isLoading }) => {
           </div>
         </div>
         <p className="text-sm text-gray-600 mb-3">
-          Dán (paste) đề bài IELTS Writing của bạn vào đây (nếu là dạng chữ).
+          Nếu đề bài là dạng chữ, dán (paste) vào đây.
         </p>
         <textarea
           id="prompt-input"
@@ -155,7 +365,7 @@ const InputColumn = ({ onGrade, isLoading }) => {
               ? "border-red-500 focus:ring-red-500"
               : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
           }`}
-          placeholder="Ví dụ: 'The chart below shows the percentage of the population in four Asian countries living in cities from 1970 to 2020...'"
+          placeholder="Ví dụ: 'The chart below shows the percentage of the population...'"
           value={promptText}
           onChange={(e) => {
             setPromptText(e.target.value);
@@ -176,7 +386,6 @@ const InputColumn = ({ onGrade, isLoading }) => {
             Nhập Bài Làm Của Bạn
           </h2>
           <div className="flex space-x-2">
-            {/* === THAY ĐỔI 4: Xóa nút Paste, thay icon Clear bằng text === */}
             <button
               onClick={() => handleClear(setEssayText)}
               className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
@@ -206,7 +415,6 @@ const InputColumn = ({ onGrade, isLoading }) => {
             }
           }}
         />
-        {/* === THAY ĐỔI 5: Đổi vị trí đếm chữ và lỗi === */}
         <div className="flex justify-between items-center mt-2">
           <div
             className={`text-sm ${
@@ -221,7 +429,7 @@ const InputColumn = ({ onGrade, isLoading }) => {
         </div>
       </div>
 
-      {/* NÚT CHẤM ĐIỂM (Giữ nguyên) */}
+      {/* NÚT CHẤM ĐIỂM */}
       <button
         id="grade-button"
         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg text-lg transition duration-200 flex items-center justify-center shadow-lg disabled:opacity-75 disabled:cursor-not-allowed"
@@ -256,20 +464,17 @@ const InputColumn = ({ onGrade, isLoading }) => {
   );
 };
 
-// === COMPONENT IeltsGrader (Chỉ còn Input) (Giữ nguyên) ===
+// === COMPONENT IeltsGrader ===
 function IeltsGrader() {
-  // Chỉ giữ lại state isLoading cho nút bấm, nếu bạn vẫn muốn hiệu ứng này
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Hàm xử lý khi người dùng nhấn nút chấm điểm
   const handleGrade = useCallback(
     (formData) => {
       setIsLoading(true);
 
       console.log("Đang gửi đi để chấm điểm:", formData);
 
-      // Giả lập 2.5 giây xử lý, sau đó điều hướng tới trang kết quả
       setTimeout(() => {
         setIsLoading(false);
         // Điều hướng tới route /WritingDone và truyền formData bằng location.state
@@ -280,25 +485,25 @@ function IeltsGrader() {
   );
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-gradient-to-b from-blue-400 to-indigo-400 text-black p-8 md:p-10 rounded-xl shadow-lg mb-8 text-center">
+    <div className="p-4 md:p-8">
+      <div className="max-w-5xl mx-auto">
+        {/* Banner Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 md:p-10 rounded-xl shadow-lg mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
             Trình Chấm Điểm IELTS Writing AI
           </h1>
-          <p className="text-lg text-black">
+          <p className="text-lg opacity-90">
             Tải lên bài viết của bạn và nhận phân tích chi tiết ngay lập tức.
           </p>
         </div>
-        {/* <h1 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-8">
-          Trình Chấm Điểm IELTS Writing AI
-        </h1> */}{" "}
-        {/* Xóa H1 cũ */}
+
+        {/* Cột nhập liệu */}
         <InputColumn onGrade={handleGrade} isLoading={isLoading} />
       </div>
     </div>
   );
 }
 
-// === COMPONENT App (root) (Giữ nguyên) ===
+// === COMPONENT App (root) ===
+// Component App gốc chịu trách nhiệm đặt nền và gọi IeltsGrader
 export default IeltsGrader;

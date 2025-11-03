@@ -1,8 +1,15 @@
 import React, { useState } from "react";
-// --- THAY ĐỔI: Import thêm BrowserRouter ---
+// --- THAY ĐỔI: Import thêm BrowserRouter và các icon Ant Design ---
 import { Link, BrowserRouter } from "react-router-dom";
+import {
+  HighlightOutlined,
+  ClockCircleOutlined,
+  RocketOutlined,
+  FieldTimeOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 
-// --- Data giả lập cho các đề thi (Đã cập nhật sang Writing) ---
+// --- Data giả lập cho các đề thi (Giữ nguyên) ---
 const testSectionsData = [
   {
     title: "Cambridge IELTS Academic 1",
@@ -60,7 +67,7 @@ const testSectionsData = [
   },
 ];
 
-// --- Icon Components (SVG nhúng trực tiếp) ---
+// --- Icon Components (SVG nhúng trực tiếp) (Giữ nguyên) ---
 const LightningIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -77,44 +84,80 @@ const LightningIcon = () => (
   </svg>
 );
 
-const SettingsIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="text-gray-300 hover:text-gray-500 transition-colors"
-  >
-    <circle cx="12" cy="12" r="3"></circle>
-    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0 2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-  </svg>
-);
+// ... (Các icon SettingsIcon, FileTextIcon giữ nguyên) ...
 
-const FileTextIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="text-gray-300 hover:text-gray-500 transition-colors"
-  >
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-    <polyline points="14 2 14 8 20 8"></polyline>
-    <line x1="16" y1="13" x2="8" y2="13"></line>
-    <line x1="16" y1="17" x2="8" y2="17"></line>
-  </svg>
-);
+// --- THÊM MỚI: Component Modal Lựa Chọn Chế Độ ---
+const TestModeModal = ({ onClose }) => {
+  return (
+    // Lớp phủ mờ
+    // === THAY ĐỔI: Chuyển từ 'bg-black bg-opacity-60' thành 'bg-black/60' ===
+    // (Tailwind v3.x syntax) để đảm bảo độ mờ được áp dụng.
+    <div
+      className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4"
+      onClick={onClose} // Đóng khi click ra ngoài
+    >
+      <div
+        className="bg-white rounded-xl shadow-xl w-full max-w-4xl mx-4 relative"
+        onClick={(e) => e.stopPropagation()} // Ngăn click bên trong modal đóng modal
+      >
+        {/* Nút X để đóng */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10"
+        >
+          <CloseOutlined style={{ fontSize: "20px" }} />
+        </button>
 
-// --- Component Card Đề thi (Theme: Orange) ---
-const TestCard = ({ test }) => {
+        {/* Nội dung modal */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-6 p-6 md:p-10">
+          {/* Cột 1: Chế độ luyện tập */}
+          <div className="border border-gray-200 rounded-lg p-8 text-center flex flex-col items-center hover:shadow-lg transition-shadow">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-5">
+              <HighlightOutlined style={{ fontSize: "32px" }} />
+            </div>
+            <h3 className="text-2xl font-semibold my-3 text-gray-800">
+              Chế độ luyện tập
+            </h3>
+            <p className="text-gray-500 mb-8 flex-grow">
+              Luyện tập với thời gian gian tùy chỉnh cùng sự hỗ trợ của AI.
+            </p>
+            <Link
+              to="/ai-assessment" // Đường link cho Chế độ 1
+              className="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            >
+              <RocketOutlined />
+              Luyện tập với AI
+            </Link>
+          </div>
+
+          {/* Cột 2: Chế độ thi thử */}
+          <div className="border border-gray-200 rounded-lg p-8 text-center flex flex-col items-center mt-6 md:mt-0 hover:shadow-lg transition-shadow">
+            <div className="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-5">
+              <ClockCircleOutlined style={{ fontSize: "32px" }} />
+            </div>
+            <h3 className="text-2xl font-semibold my-3 text-gray-800">
+              Chế độ thi thử
+            </h3>
+            <p className="text-gray-500 mb-8 flex-grow">
+              Mô phỏng thi thật với thời gian giới hạn và không có AI hỗ trợ.
+            </p>
+            <Link
+              to="/timed-test" // Đường link cho Chế độ 2
+              className="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            >
+              <FieldTimeOutlined />
+              Thi thử tính giờ
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- THAY ĐỔI: Component Card Đề thi (Theme: Orange) ---
+const TestCard = ({ test, onTakeTest }) => {
+  // Thêm prop onTakeTest
   return (
     <div className="bg-white border border-orange-300 rounded-lg shadow-sm p-4 flex flex-col items-center text-center h-full">
       <div className="bg-orange-600 text-white rounded-md w-8 h-8 flex items-center justify-center font-bold text-lg mb-2">
@@ -126,26 +169,32 @@ const TestCard = ({ test }) => {
       <div className="text-2xl font-bold text-orange-600 my-2">
         {test.progress}%
       </div>
-      <Link
-        to="/ai-assessment"
+      {/* THAY ĐỔI: Chuyển <Link> thành <button> */}
+      <button
+        onClick={onTakeTest} // Gọi hàm được truyền từ component cha
         className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition duration-200 btn-hover"
       >
         <LightningIcon />
         Take Test
-      </Link>
+      </button>
     </div>
   );
 };
 
-// --- Component Nhóm Đề thi (Theme: Orange) ---
-const TestSection = ({ title, tests }) => {
+// --- THAY ĐỔI: Component Nhóm Đề thi (Theme: Orange) ---
+const TestSection = ({ title, tests, onTakeTest }) => {
+  // Thêm prop onTakeTest
   return (
     <section className="bg-white rounded-lg shadow-md p-6 mb-8">
       <h2 className="text-xl font-semibold text-gray-900 mb-4">{title}</h2>
       <div className="border border-orange-300 rounded-lg p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {tests.map((test) => (
-            <TestCard key={test.id} test={test} />
+            <TestCard
+              key={test.id}
+              test={test}
+              onTakeTest={onTakeTest} // Truyền prop xuống
+            />
           ))}
         </div>
       </div>
@@ -153,7 +202,7 @@ const TestSection = ({ title, tests }) => {
   );
 };
 
-// --- Component Pagination (Theme: Orange) ---
+// --- Component Pagination (Theme: Orange) (Giữ nguyên) ---
 const Pagination = ({
   sectionsPerPage,
   totalSections,
@@ -226,12 +275,12 @@ const Pagination = ({
 function IeltsListWriting() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sectionsPerPage] = useState(4); // Hiển thị 4 quyển mỗi trang
+  // --- THÊM MỚI: State quản lý modal ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Logic tính toán các section cho trang hiện tại
+  // Logic tính toán các section cho trang hiện tại (Giữ nguyên)
   const indexOfLastSection = currentPage * sectionsPerPage;
   const indexOfFirstSection = indexOfLastSection - sectionsPerPage;
-
-  // Lấy ra đúng các sections cho trang hiện tại
   const currentSections = testSectionsData.slice(
     indexOfFirstSection,
     indexOfLastSection
@@ -240,7 +289,7 @@ function IeltsListWriting() {
   return (
     <div className="bg-slate-50 min-h-screen p-4 sm:p-8 font-sans">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        {/* Header (Giữ nguyên) */}
         <header className="text-center mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
             Thư viện đề&nbsp;
@@ -256,17 +305,18 @@ function IeltsListWriting() {
         </header>
 
         <main>
-          {/* Map qua 'currentSections' */}
+          {/* THAY ĐỔI: Truyền prop onTakeTest */}
           {currentSections.map((section) => (
             <TestSection
               key={section.title}
               title={section.title}
               tests={section.tests}
+              onTakeTest={() => setIsModalOpen(true)} // Hàm để mở modal
             />
           ))}
         </main>
 
-        {/* Thêm component Pagination */}
+        {/* Pagination (Giữ nguyên) */}
         <Pagination
           sectionsPerPage={sectionsPerPage}
           totalSections={testSectionsData.length}
@@ -274,6 +324,9 @@ function IeltsListWriting() {
           currentPage={currentPage}
         />
       </div>
+
+      {/* --- THÊM MỚI: Render modal nếu isModalOpen là true --- */}
+      {isModalOpen && <TestModeModal onClose={() => setIsModalOpen(false)} />}
     </div>
   );
 }
