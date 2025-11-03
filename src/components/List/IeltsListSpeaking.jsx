@@ -1,5 +1,6 @@
-import React, { useState } from "react"; // SỬA LỖI: Import thêm useState
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+// --- THAY ĐỔI 1: Import thêm BrowserRouter ---
+import { Link, BrowserRouter } from "react-router-dom";
 
 // --- Data giả lập cho các đề thi (Đã cập nhật sang Speaking) ---
 const testSectionsData = [
@@ -38,7 +39,27 @@ const testSectionsData = [
       { id: "c12_t3", title: "C12 Speaking Test 3 AC", progress: 0 },
       { id: "c12_t4", title: "C12 Speaking Test 4 AC", progress: 0 },
     ],
-  }
+  },
+  // --- THAY ĐỔI: Thêm Cam 5 và Cam 6 ---
+  {
+    title: "Cambridge IELTS Academic 5",
+    tests: [
+      { id: "c11_t1", title: "C11 Speaking Test 1 AC", progress: 0 }, // Giả sử C11
+      { id: "c11_t2", title: "C11 Speaking Test 2 AC", progress: 0 },
+      { id: "c11_t3", title: "C11 Speaking Test 3 AC", progress: 0 },
+      { id: "c11_t4", title: "C11 Speaking Test 4 AC", progress: 0 },
+    ],
+  },
+  {
+    title: "Cambridge IELTS Academic 6",
+    tests: [
+      { id: "c10_t1", title: "C10 Speaking Test 1 AC", progress: 0 }, // Giả sử C10
+      { id: "c10_t2", title: "C10 Speaking Test 2 AC", progress: 0 },
+      { id: "c10_t3", title: "C10 Speaking Test 3 AC", progress: 0 },
+      { id: "c10_t4", title: "C10 Speaking Test 4 AC", progress: 0 },
+    ],
+  },
+  // --- KẾT THÚC THAY ĐỔI ---
 ];
 
 // --- Icon Components (SVG nhúng trực tiếp) ---
@@ -60,21 +81,40 @@ const LightningIcon = () => (
 );
 
 const SettingsIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 hover:text-gray-500 transition-colors">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="text-gray-300 hover:text-gray-500 transition-colors"
+  >
     <circle cx="12" cy="12" r="3"></circle>
     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0 2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
   </svg>
 );
 
 const FileTextIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 hover:text-gray-500 transition-colors">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="text-gray-300 hover:text-gray-500 transition-colors"
+  >
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
     <polyline points="14 2 14 8 20 8"></polyline>
     <line x1="16" y1="13" x2="8" y2="13"></line>
     <line x1="16" y1="17" x2="8" y2="17"></line>
   </svg>
 );
-
 
 // --- Component Card Đề thi (Giữ nguyên) ---
 const TestCard = ({ test }) => {
@@ -96,10 +136,6 @@ const TestCard = ({ test }) => {
         <LightningIcon />
         Take Test
       </Link>
-      <div className="flex gap-4 mt-4 text-gray-300">
-        <SettingsIcon />
-        <FileTextIcon />
-      </div>
     </div>
   );
 };
@@ -121,7 +157,12 @@ const TestSection = ({ title, tests }) => {
 };
 
 // --- THÊM MỚI: Component Pagination ---
-const Pagination = ({ sectionsPerPage, totalSections, setCurrentPage, currentPage }) => {
+const Pagination = ({
+  sectionsPerPage,
+  totalSections,
+  setCurrentPage,
+  currentPage,
+}) => {
   const pageNumbers = [];
   const totalPages = Math.ceil(totalSections / sectionsPerPage);
 
@@ -146,8 +187,8 @@ const Pagination = ({ sectionsPerPage, totalSections, setCurrentPage, currentPag
         disabled={currentPage === 1}
         className={`px-3 py-2 rounded-md transition-colors ${
           currentPage === 1
-            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            : 'bg-white text-gray-700 hover:bg-purple-100'
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-white text-gray-700 hover:bg-purple-100"
         } border border-gray-300`}
       >
         Prev
@@ -160,8 +201,8 @@ const Pagination = ({ sectionsPerPage, totalSections, setCurrentPage, currentPag
           onClick={() => setCurrentPage(number)}
           className={`px-4 py-2 rounded-md transition-colors border ${
             currentPage === number
-              ? 'bg-purple-600 text-white border-purple-600'
-              : 'bg-white text-gray-700 hover:bg-purple-100 border-gray-300'
+              ? "bg-purple-600 text-white border-purple-600"
+              : "bg-white text-gray-700 hover:bg-purple-100 border-gray-300"
           }`}
         >
           {number}
@@ -174,8 +215,8 @@ const Pagination = ({ sectionsPerPage, totalSections, setCurrentPage, currentPag
         disabled={currentPage === totalPages}
         className={`px-3 py-2 rounded-md transition-colors ${
           currentPage === totalPages
-            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            : 'bg-white text-gray-700 hover:bg-purple-100'
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-white text-gray-700 hover:bg-purple-100"
         } border border-gray-300`}
       >
         Next
@@ -184,20 +225,18 @@ const Pagination = ({ sectionsPerPage, totalSections, setCurrentPage, currentPag
   );
 };
 
-
 // --- Component chính của trang (Đổi tên thành IeltsListSpeaking) ---
 function IeltsListSpeaking() {
-
   // --- THÊM MỚI: State và Logic Pagination ---
   const [currentPage, setCurrentPage] = useState(1);
-  // Đặt số lượng section (nhóm đề) mỗi trang. 
-  // Ví dụ: Đặt là 2 để thấy 2 nhóm "Cambridge..." mỗi trang
-  const [sectionsPerPage] = useState(2); 
+  // Đặt số lượng section (nhóm đề) mỗi trang.
+  // --- THAY ĐỔI: Đổi giá trị từ 2 thành 4 ---
+  const [sectionsPerPage] = useState(4);
 
   // Logic tính toán các section cho trang hiện tại
   const indexOfLastSection = currentPage * sectionsPerPage;
   const indexOfFirstSection = indexOfLastSection - sectionsPerPage;
-  
+
   // Lấy ra đúng các sections cho trang hiện tại
   const currentSections = testSectionsData.slice(
     indexOfFirstSection,
@@ -245,5 +284,8 @@ function IeltsListSpeaking() {
     </div>
   );
 }
+
+// --- THAY ĐỔI 2: Tạo component App mới để bọc BrowserRouter ---
+// Component App này sẽ là default export mới
 
 export default IeltsListSpeaking;

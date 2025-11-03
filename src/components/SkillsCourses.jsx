@@ -12,12 +12,6 @@ const practiceSkills = [
       "Practice & take IELTS Listening mock tests with materials matching the real test difficulty.",
     buttons: [
       { type: "link", text: "Academic", href: "/listening", style: "academic" },
-      {
-        type: "link",
-        text: "General Training",
-        href: "/listening",
-        style: "general",
-      },
     ],
     // === THAY ĐỔI: Đổi sang màu Blue ===
     iconBg: "bg-blue-100",
@@ -30,12 +24,6 @@ const practiceSkills = [
       "Practice & take IELTS Reading mock tests with materials matching the real test difficulty.",
     buttons: [
       { type: "link", text: "Academic", href: "/reading", style: "academic" },
-      {
-        type: "link",
-        text: "General Training",
-        href: "/reading",
-        style: "general",
-      },
     ],
     // === THAY ĐỔI: Đổi sang màu Blue ===
     iconBg: "bg-blue-100",
@@ -50,14 +38,8 @@ const practiceSkills = [
       {
         type: "link",
         text: "Academic",
-        href: "/ai-assessment",
-        style: "academic",
-      },
-      {
-        type: "link",
-        text: "General Training",
         href: "/writing",
-        style: "general",
+        style: "academic",
       },
     ],
     // === THAY ĐỔI: Đổi sang màu Blue ===
@@ -76,12 +58,6 @@ const practiceSkills = [
         text: "Academic",
         href: "/speaking", // Cần đảm bảo trang AI có tab Speaking
         style: "academic",
-      },
-      {
-        type: "link",
-        text: "General Training",
-        href: "/speaking",
-        style: "general",
       },
     ],
     // === THAY ĐỔI: Đổi sang màu Blue ===

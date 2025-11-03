@@ -27,17 +27,19 @@ const AIIELTS = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
           {/* Card 1: Writing */}
           <div className="bg-white p-10 rounded-2xl border border-gray-200 shadow-lg text-left flex flex-col">
-            
             {/* === THAY ĐỔI 2: Sử dụng icon 'Landmark' === */}
             <div className="w-16 h-16 bg-blue-100/70 rounded-full flex items-center justify-center mb-5">
               <Landmark className="w-8 h-8 text-blue-600" />
             </div>
-            
+
             {/* Title */}
-            <h3 className="text-3xl font-bold text-gray-900 mb-3">Cambridge English IELTS Collection</h3>
+            <h3 className="text-3xl font-bold text-gray-900 mb-3">
+              Cambridge English IELTS Collection
+            </h3>
             {/* Description */}
             <p className="text-gray-600 text-lg mb-6 flex-grow">
-              Free IELTS online mock tests with Cambridge sets, including both Academic & General Training.
+              Free IELTS online mock tests with Cambridge sets, including both
+              Academic & General Training.
             </p>
             {/* Buttons */}
             <div className="flex items-center gap-4">
@@ -47,30 +49,24 @@ const AIIELTS = () => {
               >
                 Academic
               </Link>
-              <Link
-                to="/cambridge-tests"
-                className="text-gray-700 hover:text-blue-600 font-medium flex items-center gap-1 group-link text-lg"
-              >
-                General Training
-                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover-link:translate-x-1" />
-              </Link>
             </div>
           </div>
 
           {/* Card 2: Speaking */}
           <div className="bg-white p-10 rounded-2xl border border-gray-200 shadow-lg text-left flex flex-col">
-            
             {/* === THAY ĐỔI 3: Sử dụng icon 'Landmark' === */}
             <div className="w-16 h-16 bg-blue-100/70 rounded-full flex items-center justify-center mb-5">
               <Landmark className="w-8 h-8 text-blue-600" />
             </div>
 
             {/* Title */}
-            <h3 className="text-3xl font-bold text-gray-900 mb-3">Collins English IELTS Tests Collection</h3>
+            <h3 className="text-3xl font-bold text-gray-900 mb-3">
+              Collins English IELTS Tests Collection
+            </h3>
             {/* Description */}
             <p className="text-gray-600 text-lg mb-6 flex-grow">
-              Free IELTS online mock tests with Collins sets, 
-              including both Academic & General Training.
+              Free IELTS online mock tests with Collins sets, including both
+              Academic & General Training.
             </p>
             {/* Buttons */}
             <div className="flex items-center gap-4">
@@ -79,13 +75,6 @@ const AIIELTS = () => {
                 className="bg-blue-600 hover:bg-blue-900 text-white px-6 py-2.5 rounded-lg font-medium btn-hover"
               >
                 Academic
-              </Link>
-              <Link
-                to="/collins-tests"
-                className="text-gray-700 hover:text-blue-600 font-medium flex items-center gap-1 group-link text-lg"
-              >
-                General Training
-                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover-link:translate-x-1" />
               </Link>
             </div>
           </div>
