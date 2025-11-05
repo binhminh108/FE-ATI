@@ -1,23 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
 import Header from "../MainExam/Header.jsx";
-import { useLocation } from "react-router-dom"; // THÊM IMPORT NÀY
+import { useLocation } from "react-router-dom";
 
 export default function IELTSScoringApp() {
   const [leftWidth, setLeftWidth] = useState(50);
   const [isResizing, setIsResizing] = useState(false);
   const containerRef = useRef(null);
+  const [promptImageUrl, setPromptImageUrl] = useState(null);
 
-  // --- THÊM LOGIC LẤY DATA TỪ TRANG TRƯỚC ---
   const location = useLocation();
   const formData = location.state?.formData;
 
-  // Tính toán số từ dựa trên formData
   const wordCount = formData?.essay
     ? formData.essay.trim().split(/\s+/).filter(Boolean).length
     : 0;
-  // --- KẾT THÚC LOGIC LẤY DATA ---
 
-  // Dữ liệu mock cho phân tích AI (giữ nguyên)
+  // Dữ liệu mock cho phân tích lỗi AI
   const essayErrors = [
     {
       text: "technology made our lives more complicated",
@@ -60,30 +58,51 @@ export default function IELTSScoringApp() {
     },
   ];
 
+  // useEffect để xử lý URL ảnh (Đã sửa lỗi createObjectURL)
+  useEffect(() => {
+    let imageUrl = null;
+    const imageSource = formData?.image;
+
+    if (imageSource) {
+      if (typeof imageSource === "string") {
+        imageUrl = imageSource;
+      } else if (imageSource instanceof File || imageSource instanceof Blob) {
+        imageUrl = URL.createObjectURL(imageSource);
+      }
+    }
+
+    setPromptImageUrl(imageUrl);
+
+    return () => {
+      if (
+        imageUrl &&
+        (imageSource instanceof File || imageSource instanceof Blob)
+      ) {
+        URL.revokeObjectURL(imageUrl);
+      }
+    };
+  }, [formData?.image]);
+
+  // useEffect cho Resizer (Giữ nguyên)
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (!isResizing || !containerRef.current) return;
-
       const containerRect = containerRef.current.getBoundingClientRect();
       const newLeftWidth =
         ((e.clientX - containerRect.left) / containerRect.width) * 100;
-
       if (newLeftWidth >= 20 && newLeftWidth <= 80) {
         setLeftWidth(newLeftWidth);
       }
     };
-
     const handleMouseUp = () => {
       setIsResizing(false);
     };
-
     if (isResizing) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
       document.body.style.cursor = "col-resize";
       document.body.style.userSelect = "none";
     }
-
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
@@ -92,18 +111,7 @@ export default function IELTSScoringApp() {
     };
   }, [isResizing]);
 
-  // Component ErrorHighlight (giữ nguyên)
-  const ErrorHighlight = ({ text, error }) => {
-    // ... (code giữ nguyên) ...
-  };
-
-  // Dữ liệu mock cho điểm số (giữ nguyên)
-  const criteriaData = [
-    // ... (code giữ nguyên) ...
-  ];
-
-  // --- THÊM BỘ KIỂM TRA (Guard Clause) ---
-  // Nếu người dùng truy cập trực tiếp trang này mà không có data
+  // Bộ kiểm tra (Guard Clause)
   if (!formData) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8">
@@ -113,20 +121,17 @@ export default function IELTSScoringApp() {
         <p className="text-gray-600">
           Vui lòng quay lại trang nộp bài và chấm điểm trước.
         </p>
-        {/* Bạn có thể thêm nút Link để quay lại trang trước */}
       </div>
     );
   }
-  // --- KẾT THÚC BỘ KIỂM TRA ---
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      {/* ... (code header của bạn) ... */}
-
+      {/* <Header /> */} {/* Bạn có thể mở lại Header nếu cần */}
       {/* Main Content */}
       <div ref={containerRef} className="flex flex-1 overflow-hidden mt-2">
-        {/* Left Panel */}
+        {/* Left Panel - Cột đề bài và bài làm */}
         <div
           style={{ width: `${leftWidth}%` }}
           className="bg-white overflow-hidden flex flex-col"
@@ -138,7 +143,7 @@ export default function IELTSScoringApp() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            {/* --- THAY ĐỔI: HIỂN THỊ ĐỀ BÀI TỪ FORMDATA --- */}
+            {/* ĐỀ BÀI */}
             <div className="bg-blue-50 rounded-lg p-6">
               <h3 className="text-md font-semibold text-blue-800 mb-3 flex items-center">
                 <svg
@@ -146,6 +151,7 @@ export default function IELTSScoringApp() {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
                     strokeLinecap="round"
@@ -154,24 +160,22 @@ export default function IELTSScoringApp() {
                     d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                {/* Hiển thị Task 1 hoặc 2 */}
                 Đề bài (Task {formData.task})
               </h3>
               <div className="text-gray-700 leading-relaxed">
-                {/* Hiển thị ảnh nếu là Task 1 và có ảnh */}
-                {formData.task === 1 && formData.image && (
+                {/* Hiển thị ảnh (Đã sửa) */}
+                {formData.task === 1 && promptImageUrl && (
                   <div className="mb-4">
                     <img
-                      src={URL.createObjectURL(formData.image)}
+                      src={promptImageUrl}
                       alt="Đề bài Task 1"
-                      className="max-w-full rounded-lg shadow-md"
-                      onLoad={(e) => URL.revokeObjectURL(e.target.src)} // Giải phóng bộ nhớ
+                      className="w-full rounded-lg shadow-md" // Sửa thành w-full
                     />
                   </div>
                 )}
-                {/* Hiển thị đề bài dạng chữ (nếu có) */}
+                {/* Hiển thị text đề bài (Đã sửa) */}
                 {formData.prompt && (
-                  <p className="mb-4">
+                  <p className="mb-4" style={{ fontSize: "18px" }}>
                     <strong>{formData.prompt}</strong>
                   </p>
                 )}
@@ -183,7 +187,7 @@ export default function IELTSScoringApp() {
               </div>
             </div>
 
-            {/* --- THAY ĐỔI: HIỂN THỊ BÀI LÀM TỪ FORMDATA --- */}
+            {/* BÀI LÀM */}
             <div className="bg-gray-50 rounded-lg p-6">
               <h3 className="text-md font-semibold text-gray-800 mb-3 flex items-center justify-between">
                 <span className="flex items-center">
@@ -192,6 +196,7 @@ export default function IELTSScoringApp() {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
                       strokeLinecap="round"
@@ -202,20 +207,10 @@ export default function IELTSScoringApp() {
                   </svg>
                   Bài làm của bạn
                 </span>
-                {/* Hiển thị số từ đã đếm */}
                 <span className="text-sm text-gray-500">{wordCount} từ</span>
               </h3>
               <div className="text-gray-700 leading-relaxed space-y-4 whitespace-pre-wrap">
-                {/* Hiển thị bài luận (plain text).
-                  Phần ErrorHighlight phức tạp hơn, cần AI xử lý.
-                  Hiện tại, chúng ta chỉ hiển thị bài luận gốc.
-                */}
                 <p>{formData.essay}</p>
-
-                {/* PHẦN NÂNG CAO (ĐÃ ẨN): 
-                  Nếu bạn muốn giữ phần mock essayErrors, bạn có thể
-                  hiển thị lại code cũ thay vì <p>{formData.essay}</p>
-                */}
               </div>
             </div>
           </div>
@@ -229,12 +224,12 @@ export default function IELTSScoringApp() {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-5 h-10 bg-gray-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
 
-        {/* Right Panel (Giữ nguyên phần mock data phân tích AI) */}
+        {/* === SỬA: KHÔI PHỤC LẠI CỘT BÊN PHẢI === */}
+        {/* Right Panel - Cột Phân Tích AI */}
         <div
           style={{ width: `${100 - leftWidth}%` }}
           className="bg-gray-50 overflow-hidden flex flex-col"
         >
-          {/* ... (Toàn bộ code của cột bên phải giữ nguyên) ... */}
           <div className="bg-gradient-to-b from-blue-400 to-indigo-400 text-black px-6 py-4">
             <h2 className="text-lg font-semibold">Đánh giá AI chi tiết</h2>
           </div>
@@ -288,6 +283,7 @@ export default function IELTSScoringApp() {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
                     strokeLinecap="round"
@@ -332,6 +328,7 @@ export default function IELTSScoringApp() {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
                     strokeLinecap="round"
@@ -356,7 +353,7 @@ export default function IELTSScoringApp() {
                       • Trả lời đầy đủ cả hai quan điểm và đưa ra ý kiến cá nhân
                     </li>
                     <li>• Sử dụng từ vựng phong phú và chính xác</li>
-                    <li>• Đạt yêu cầu về số từ (287 từ)</li>
+                    <li>• Đạt yêu cầu về số từ ({wordCount} từ)</li>
                   </ul>
                 </div>
                 <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-transparent hover:border-teal-500 transition-all">
@@ -397,6 +394,7 @@ export default function IELTSScoringApp() {
             </div>
           </div>
         </div>
+        {/* === KẾT THÚC KHÔI PHỤC === */}
       </div>
     </div>
   );

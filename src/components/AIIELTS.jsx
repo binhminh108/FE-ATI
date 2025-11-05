@@ -72,7 +72,7 @@ const PracticeModeModal = ({ isOpen, onClose }) => {
               Mô phỏng thi thật với thời gian giới hạn và không có AI hỗ trợ.
             </p>
             <Link
-              to="/timed-test"
+              to="/Writing"
               className="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors"
               onClick={onClose} // Đóng modal khi nhấn link
             >

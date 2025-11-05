@@ -1,60 +1,51 @@
-import React, { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-
-// --- THÊM IMPORT CHO CHART UPLOAD ---
+import React, { useState, useCallback, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { InboxOutlined } from "@ant-design/icons";
-// Sửa: Bỏ import { Image } từ 'antd' vì không dùng nữa
 import { message, Upload, Button } from "antd";
 
 const { Dragger } = Upload;
 
 // ====================================================================
-// === COMPONENT ChartUpload (ĐÃ ĐƯỢC GỘP VÀO ĐÂY) ===
+// === COMPONENT ChartUpload (Giữ nguyên) ===
 // ====================================================================
-
-// --- Component Preview Item (Cập nhật) ---
-const PreviewItem = ({ file, onRemove }) => {
+const PreviewItem = ({ file, onRemove, disabled }) => {
   return (
-    // THÊM 'group' ĐỂ KÍCH HOẠT HIỆU ỨNG HOVER
-    // === SỬA LỖI: Thêm onClick stopPropagation và cursor-default ===
     <div
       key={file.uid}
-      onClick={(e) => e.stopPropagation()} // Ngăn click lan lên Dragger
-      // THAY ĐỔI: Tăng chiều cao từ h-80 lên h-96 (384px)
-      className="relative group w-full h-96 rounded-lg overflow-hidden shadow-md bg-gray-100 cursor-default" // Đặt cursor bình thường
+      onClick={(e) => e.stopPropagation()}
+      className="relative group w-full h-96 rounded-lg overflow-hidden shadow-md bg-gray-100 cursor-default"
     >
       <img
         src={file.url}
         alt={file.name}
-        className="w-full h-full object-contain" // Giữ object-contain
+        className="w-full h-full object-contain"
       />
-
-      {/* THAY ĐỔI: Thêm 'hidden', 'group-hover:block', và 'cursor-pointer' */}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation(); // Ngăn click lan lên div cha
-          onRemove(file);
-        }}
-        aria-label="Remove"
-        className="absolute top-2 right-2 z-10 bg-black/60 text-white rounded-full p-1 hover:bg-black/80 transition-all hidden group-hover:block cursor-pointer" // Thêm cursor-pointer
-      >
-        {/* Icon X (Close) bằng SVG */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5" // Tăng kích thước icon lên 1 chút
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+      {!disabled && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove(file);
+          }}
+          aria-label="Remove"
+          className="absolute top-2 right-2 z-10 bg-black/60 text-white rounded-full p-1 hover:bg-black/80 transition-all hidden group-hover:block cursor-pointer"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 };
@@ -64,12 +55,43 @@ const ChartUpload = ({
   handleFileSelect,
   handleFileDrop,
   maxSizeMB = 20,
+  initialImageUrl,
+  disabled = false,
 }) => {
-  const [fileList, setFileList] = useState([]);
+  const getInitialFile = () => {
+    if (initialImageUrl) {
+      return [
+        {
+          uid: "locked-image",
+          name: "Đề bài",
+          status: "done",
+          url: initialImageUrl,
+        },
+      ];
+    }
+    return [];
+  };
+
+  const [fileList, setFileList] = useState(getInitialFile());
   const [uploading, setUploading] = useState(false);
 
-  // Validate and add preview
+  useEffect(() => {
+    if (initialImageUrl) {
+      setFileList([
+        {
+          uid: "locked-image",
+          name: "Đề bài",
+          status: "done",
+          url: initialImageUrl,
+        },
+      ]);
+    } else if (!disabled) {
+      // setFileList([]);
+    }
+  }, [initialImageUrl, disabled]);
+
   const beforeUpload = (file) => {
+    if (disabled) return Upload.LIST_IGNORE;
     if (!file.type.match("image.*")) {
       message.error("Chỉ cho phép file hình (jpg/png/webp).");
       return Upload.LIST_IGNORE;
@@ -78,7 +100,6 @@ const ChartUpload = ({
       message.error(`Ảnh phải nhỏ hơn ${maxSizeMB} MB.`);
       return Upload.LIST_IGNORE;
     }
-
     const reader = new FileReader();
     reader.onload = (e) => {
       const previewFile = {
@@ -89,18 +110,14 @@ const ChartUpload = ({
         originFileObj: file,
       };
       setFileList((prev) => [...prev, previewFile]);
-
-      // --- Báo cho cha biết có file ---
       if (typeof handleFileSelect === "function") {
         handleFileSelect({ target: { files: [file] } });
       }
     };
     reader.readAsDataURL(file);
-
     return Upload.LIST_IGNORE;
   };
 
-  // Keep controlled list in sync if antd triggers change (removes etc.)
   const handleChange = ({ fileList: newList }) => {
     const normalized = newList
       .filter((f) => f && (f.uid || f.url || f.originFileObj))
@@ -116,26 +133,18 @@ const ChartUpload = ({
             }
       );
     setFileList(normalized);
-
-    // --- Báo cho cha biết nếu fileList rỗng ---
     if (newList.length === 0 && typeof handleFileSelect === "function") {
-      handleFileSelect({ target: { files: [] } }); // Gửi mảng rỗng
+      handleFileSelect({ target: { files: [] } });
     }
   };
 
   const handleRemove = (file) => {
+    if (disabled) return;
     const newList = fileList.filter((f) => f.uid !== file.uid);
     setFileList(newList);
-
-    // --- Báo cho cha biết nếu fileList rỗng sau khi xóa ---
     if (newList.length === 0 && typeof handleFileSelect === "function") {
-      handleFileSelect({ target: { files: [] } }); // Gửi mảng rỗng
+      handleFileSelect({ target: { files: [] } });
     }
-  };
-
-  // ... (Hàm startUpload giữ nguyên) ...
-  const startUpload = async () => {
-    /* (code giữ nguyên) */
   };
 
   return (
@@ -144,9 +153,10 @@ const ChartUpload = ({
         Tải Lên Ảnh Đề Bài
       </h2>
       <p className="text-sm text-gray-600 mb-3">
-        Nếu đề bài của bạn là hình ảnh (biểu đồ, bản đồ...), hãy tải nó lên đây.
+        {disabled
+          ? "Đề bài đã được cung cấp."
+          : "Nếu đề bài của bạn là hình ảnh (biểu đồ, bản đồ...), hãy tải nó lên đây."}
       </p>
-
       <Dragger
         accept=".jpg,.jpeg,.png,.webp"
         multiple={true}
@@ -158,7 +168,8 @@ const ChartUpload = ({
         onDrop={(e) => {
           if (typeof handleFileDrop === "function") handleFileDrop(e);
         }}
-        className="transition-all"
+        disabled={disabled}
+        className={`transition-all ${disabled ? "cursor-not-allowed" : ""}`}
         style={
           fileList.length > 0 ? { padding: 0, border: "none" } : { padding: 12 }
         }
@@ -169,38 +180,46 @@ const ChartUpload = ({
               <InboxOutlined />
             </p>
             <p className="ant-upload-text">
-              Nhấn hoặc kéo thả file vào khu vực này để tải lên
+              {disabled
+                ? "Không yêu cầu tải ảnh"
+                : "Nhấn hoặc kéo thả file vào khu vực này để tải lên"}
             </p>
             <p className="ant-upload-hint">
-              Ảnh biểu đồ sẽ được hiển thị rõ nét tại đây.
+              {disabled
+                ? "Bài thi này không có ảnh đính kèm."
+                : "Ảnh biểu đồ sẽ được hiển thị rõ nét tại đây."}
             </p>
           </>
         ) : (
           <div className="p-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-            {/* THAY ĐỔI: Bỏ grid, dùng flex-col để ảnh xếp dọc và to */}
             <div className="preview-gallery flex flex-col gap-4">
               {fileList.map((f) => (
-                <PreviewItem key={f.uid} file={f} onRemove={handleRemove} />
+                <PreviewItem
+                  key={f.uid}
+                  file={f}
+                  onRemove={handleRemove}
+                  disabled={disabled}
+                />
               ))}
             </div>
-            <p className="text-center text-gray-500 mt-4 text-sm font-medium">
-              Bạn vẫn có thể kéo thả hoặc click vào đây để tải thêm ảnh.
-            </p>
+            {!disabled && (
+              <p className="text-center text-gray-500 mt-4 text-sm font-medium">
+                Bạn vẫn có thể kéo thả hoặc click vào đây để tải thêm ảnh.
+              </p>
+            )}
           </div>
         )}
       </Dragger>
-
       <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
         <Button
           onClick={() => {
             setFileList([]);
             message.info("Đã xoá tất cả file.");
-            // --- Báo cho cha biết khi clear all ---
             if (typeof handleFileSelect === "function") {
               handleFileSelect({ target: { files: [] } });
             }
           }}
-          disabled={fileList.length === 0}
+          disabled={fileList.length === 0 || disabled}
         >
           Xóa tất cả
         </Button>
@@ -212,45 +231,52 @@ const ChartUpload = ({
 // === KẾT THÚC COMPONENT ChartUpload ===
 // ====================================================================
 
-// === COMPONENT CỘT NHẬP LIỆU (BÊN TRÁI) ===
-const InputColumn = ({ onGrade, isLoading }) => {
-  const [selectedTask, setSelectedTask] = useState(1);
-  const [promptText, setPromptText] = useState("");
+const InputColumn = ({ onGrade, isLoading, lockedData }) => {
+  const isLocked = !!lockedData;
+  const [selectedTask, setSelectedTask] = useState(lockedData?.taskType || 1);
+  const [promptText, setPromptText] = useState(lockedData?.promptText || "");
   const [essayText, setEssayText] = useState("");
-  const [uploadedFile, setUploadedFile] = useState(null); // State để giữ file
+  const [uploadedFile, setUploadedFile] = useState(null);
   const [errors, setErrors] = useState({ prompt: null, essay: null });
 
+  useEffect(() => {
+    if (lockedData) {
+      setSelectedTask(lockedData.taskType);
+      setPromptText(lockedData.promptText || "");
+      setUploadedFile(null);
+      setErrors({ prompt: null, essay: null });
+    }
+  }, [lockedData]);
+
   const handleTaskChange = (task) => {
+    if (isLocked) return;
     setSelectedTask(task);
     setErrors((prev) => ({ ...prev, prompt: null }));
   };
 
-  // Xử lý khi tải file (nhận từ ChartUpload)
   const handleFileChange = (event) => {
-    // Kiểm tra xem event có file hay không (có thể là mảng rỗng khi clear)
+    if (isLocked) return;
     const file = event.target.files && event.target.files[0];
     if (file) {
       setUploadedFile(file);
-      // Xóa lỗi prompt nếu người dùng upload file
       setErrors((prev) => ({ ...prev, prompt: null }));
     } else {
-      // Nếu không có file (ví dụ: người dùng xóa hết)
       setUploadedFile(null);
     }
   };
 
-  // Xử lý khi nhấn nút chấm điểm
   const handleSubmit = () => {
     let hasError = false;
     let newErrors = { prompt: null, essay: null };
 
-    // Validate: Cần kiểm tra state 'uploadedFile'
-    if (selectedTask === 1 && promptText.trim() === "" && !uploadedFile) {
-      newErrors.prompt = "Vui lòng nhập đề bài hoặc tải ảnh lên.";
-      hasError = true;
-    } else if (selectedTask === 2 && promptText.trim() === "") {
-      newErrors.prompt = "Vui lòng nhập đề bài.";
-      hasError = true;
+    if (!isLocked) {
+      if (selectedTask === 1 && promptText.trim() === "" && !uploadedFile) {
+        newErrors.prompt = "Vui lòng nhập đề bài hoặc tải ảnh lên.";
+        hasError = true;
+      } else if (selectedTask === 2 && promptText.trim() === "") {
+        newErrors.prompt = "Vui lòng nhập đề bài.";
+        hasError = true;
+      }
     }
 
     if (essayText.trim() === "") {
@@ -259,7 +285,6 @@ const InputColumn = ({ onGrade, isLoading }) => {
     }
 
     setErrors(newErrors);
-
     if (hasError) {
       return;
     }
@@ -268,17 +293,16 @@ const InputColumn = ({ onGrade, isLoading }) => {
       task: selectedTask,
       prompt: promptText,
       essay: essayText,
-      image: uploadedFile, // Gửi file đi
+      image: isLocked ? lockedData.promptImage : uploadedFile,
     });
   };
 
-  // Hàm đếm chữ
   const countWords = (text) => {
     return text.trim().split(/\s+/).filter(Boolean).length;
   };
 
-  // Hàm Clear
   const handleClear = (setter) => {
+    if (setter === setPromptText && isLocked) return;
     setter("");
   };
 
@@ -291,10 +315,16 @@ const InputColumn = ({ onGrade, isLoading }) => {
         <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
           Chọn Loại Bài Viết
         </h2>
-        <div className="flex flex-col sm:flex-row sm:space-x-8 space-y-2 sm:space-y-0">
+        <div
+          className={`flex flex-col sm:flex-row sm:space-x-8 space-y-2 sm:space-y-0 ${
+            isLocked ? "opacity-75 cursor-not-allowed" : ""
+          }`}
+        >
           <label
             htmlFor="radio-task1"
-            className="flex items-center cursor-pointer"
+            className={`flex items-center ${
+              isLocked ? "cursor-not-allowed" : "cursor-pointer"
+            }`}
           >
             <input
               type="radio"
@@ -304,6 +334,7 @@ const InputColumn = ({ onGrade, isLoading }) => {
               className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2"
               checked={selectedTask === 1}
               onChange={() => handleTaskChange(1)}
+              disabled={isLocked}
             />
             <span className="ml-3 text-lg text-gray-700 font-medium">
               Task 1 - Chart/Graph
@@ -311,7 +342,9 @@ const InputColumn = ({ onGrade, isLoading }) => {
           </label>
           <label
             htmlFor="radio-task2"
-            className="flex items-center cursor-pointer"
+            className={`flex items-center ${
+              isLocked ? "cursor-not-allowed" : "cursor-pointer"
+            }`}
           >
             <input
               type="radio"
@@ -321,6 +354,7 @@ const InputColumn = ({ onGrade, isLoading }) => {
               className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2"
               checked={selectedTask === 2}
               onChange={() => handleTaskChange(2)}
+              disabled={isLocked}
             />
             <span className="ml-3 text-lg text-gray-700 font-medium">
               Task 2 - Essay
@@ -330,12 +364,12 @@ const InputColumn = ({ onGrade, isLoading }) => {
       </div>
 
       {/* KHỐI 1.5: UPLOAD ẢNH (Conditional) */}
-      {/* Chỉ hiển thị khi chọn Task 1 */}
       {selectedTask === 1 && (
         <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 transition-all duration-300">
           <ChartUpload
-            handleFileSelect={handleFileChange} // Truyền hàm xử lý file xuống
-            // handleFileDrop={...} // (Bạn có thể thêm nếu cần)
+            handleFileSelect={handleFileChange}
+            initialImageUrl={lockedData?.promptImage}
+            disabled={isLocked}
           />
         </div>
       )}
@@ -345,17 +379,21 @@ const InputColumn = ({ onGrade, isLoading }) => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Nhập Đề Bài</h2>
           <div className="flex space-x-2">
-            <button
-              onClick={() => handleClear(setPromptText)}
-              className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
-              title="Xóa"
-            >
-              Xóa
-            </button>
+            {!isLocked && (
+              <button
+                onClick={() => handleClear(setPromptText)}
+                className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
+                title="Xóa"
+              >
+                Xóa
+              </button>
+            )}
           </div>
         </div>
         <p className="text-sm text-gray-600 mb-3">
-          Nếu đề bài là dạng chữ, dán (paste) vào đây.
+          {isLocked
+            ? "Đề bài đã được cung cấp."
+            : "Nếu đề bài là dạng chữ, dán (paste) vào đây."}
         </p>
         <textarea
           id="prompt-input"
@@ -364,22 +402,24 @@ const InputColumn = ({ onGrade, isLoading }) => {
             errors.prompt
               ? "border-red-500 focus:ring-red-500"
               : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-          }`}
+          } ${isLocked ? "bg-gray-100 cursor-not-allowed" : ""}`}
           placeholder="Ví dụ: 'The chart below shows the percentage of the population...'"
           value={promptText}
           onChange={(e) => {
+            if (isLocked) return;
             setPromptText(e.target.value);
             if (e.target.value.trim() !== "") {
               setErrors((prev) => ({ ...prev, prompt: null }));
             }
           }}
+          readOnly={isLocked}
         />
         {errors.prompt && (
           <div className="text-red-600 text-sm mt-1">{errors.prompt}</div>
         )}
       </div>
 
-      {/* KHỐI 3: NHẬP BÀI LÀM */}
+      {/* KHỐI 3: NHẬP BÀI LÀM (Giữ nguyên, không bị khóa) */}
       <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">
@@ -411,7 +451,7 @@ const InputColumn = ({ onGrade, isLoading }) => {
           onChange={(e) => {
             setEssayText(e.target.value);
             if (e.target.value.trim() !== "") {
-              setErrors((prev) => ({ ...prev, essay: null }));
+              setErrors((prev) => ({ ...prev, prompt: null }));
             }
           }}
         />
@@ -429,10 +469,10 @@ const InputColumn = ({ onGrade, isLoading }) => {
         </div>
       </div>
 
-      {/* NÚT CHẤM ĐIỂM */}
+      {/* --- SỬA 2: Thêm lại className (style) cho Button --- */}
       <button
         id="grade-button"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg text-lg transition duration-200 flex items-center justify-center shadow-lg disabled:opacity-75 disabled:cursor-not-allowed"
+        className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleSubmit}
         disabled={isLoading}
       >
@@ -468,6 +508,8 @@ const InputColumn = ({ onGrade, isLoading }) => {
 function IeltsGrader() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const lockedData = location.state?.lockedPrompt;
 
   const handleGrade = useCallback(
     (formData) => {
@@ -475,35 +517,49 @@ function IeltsGrader() {
 
       console.log("Đang gửi đi để chấm điểm:", formData);
 
+      // --- PHẦN 3: Gửi dữ liệu qua trang WritingDone ---
+      // Dữ liệu này đã CÓ chứa đề bài (formData.prompt)
+      // và bài làm (formData.essay)
+      const navigationState = {
+        formData, // chứa { task, prompt, essay, image }
+        promptData: lockedData || {
+          taskType: formData.task,
+          promptText: formData.prompt,
+          promptImage: formData.image,
+        },
+      };
+
       setTimeout(() => {
         setIsLoading(false);
-        // Điều hướng tới route /WritingDone và truyền formData bằng location.state
-        navigate("/WritingDone", { state: { formData } });
-      }, 2500);
+        // Code này ĐÃ điều hướng đến /WritingDone
+        navigate("/WritingDone", { state: navigationState });
+      }, 2500); // Giả lập thời gian chấm điểm
     },
-    [navigate]
+    [navigate, lockedData]
   );
 
   return (
     <div className="p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
-        {/* Banner Header */}
+        {/* --- SỬA 1: Thêm lại nội dung Banner --- */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 md:p-10 rounded-xl shadow-lg mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
-            Trình Chấm Điểm IELTS Writing AI
+            AI Writing Assessment
           </h1>
-          <p className="text-lg opacity-90">
-            Tải lên bài viết của bạn và nhận phân tích chi tiết ngay lập tức.
+          <p className="text-lg md:text-xl text-indigo-100">
+            Nhập đề bài và bài làm của bạn để được chấm điểm chi tiết.
           </p>
         </div>
 
-        {/* Cột nhập liệu */}
-        <InputColumn onGrade={handleGrade} isLoading={isLoading} />
+        {/* Truyền lockedData xuống InputColumn */}
+        <InputColumn
+          onGrade={handleGrade}
+          isLoading={isLoading}
+          lockedData={lockedData}
+        />
       </div>
     </div>
   );
 }
 
-// === COMPONENT App (root) ===
-// Component App gốc chịu trách nhiệm đặt nền và gọi IeltsGrader
 export default IeltsGrader;
